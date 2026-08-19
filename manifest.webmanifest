@@ -1,0 +1,9 @@
+{
+  "name": "PARAÍSO Radio",
+  "short_name": "PARAÍSO",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#080809",
+  "theme_color": "#080809",
+  "description": "PARAÍSO live internet radio player"
+}
