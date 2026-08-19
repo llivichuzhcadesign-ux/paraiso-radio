@@ -1,8 +1,13 @@
 (()=>{
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const views={dashboard:'Dashboard',live:'Live Studio',library:'Library',schedule:'Schedule',djs:'DJs & Hosts',analytics:'Analytics',settings:'Settings'};
+const LIVE_STORAGE_KEY='paraiso.radio.liveState';
 
-// Global ON AIR visual system. Kept here so it follows the live state everywhere in Studio.
+// The mixer in live-studio.js is the only broadcast-state owner.
+// Remove the legacy card controls before live-studio.js mounts so duplicate IDs cannot exist at runtime.
+$('#view-live .live-layout')?.remove();
+
+// Global ON AIR visuals react to the single live state exposed by the mixer through body.live-broadcasting.
 const liveStyle=document.createElement('style');
 liveStyle.textContent=`
   #globalLiveBanner{position:fixed;top:10px;left:50%;transform:translate(-50%,-18px);z-index:120;display:flex;align-items:center;gap:10px;padding:9px 15px;border-radius:999px;background:#0f2b1a;border:1px solid #48dc82;color:#baf7d0;font-weight:900;font-size:.76rem;letter-spacing:.1em;box-shadow:0 8px 32px rgba(72,220,130,.18);opacity:0;pointer-events:none;transition:.2s ease}
@@ -31,12 +36,47 @@ liveBanner.setAttribute('role','status');
 liveBanner.setAttribute('aria-live','polite');
 liveBanner.innerHTML='<span class="onair-dot"></span><b>ON AIR</b><span>LIVE BROADCAST</span><time id="liveElapsed">00:00</time>';
 document.body.appendChild(liveBanner);
-let liveStartedAt=null,liveTimer=null;
+
+let liveStartedAt=null,liveTimer=null,lastLiveState=null;
+function readDemoLiveState(){
+  try{return JSON.parse(localStorage.getItem(LIVE_STORAGE_KEY)||'null')}catch{return null}
+}
+function writeDemoLiveState(isLive){
+  const previous=readDemoLiveState();
+  const startedAt=isLive?(previous?.isLive&&previous?.startedAt?previous.startedAt:Date.now()):null;
+  const show=isLive?($('#liveShowSelect')?.value||previous?.show||'Live broadcast'):'';
+  const state={isLive,startedAt,show,streamerName:'Sebastián',updatedAt:Date.now()};
+  try{localStorage.setItem(LIVE_STORAGE_KEY,JSON.stringify(state))}catch{}
+  return state;
+}
 function updateLiveTimer(){
   if(!liveStartedAt)return;
   const sec=Math.floor((Date.now()-liveStartedAt)/1000),m=Math.floor(sec/60),s=sec%60;
   const el=$('#liveElapsed');if(el)el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
 }
+function syncBroadcastVisualState(force=false){
+  const isLive=document.body.classList.contains('live-broadcasting');
+  if(!force&&isLive===lastLiveState)return;
+  lastLiveState=isLive;
+  const stored=writeDemoLiveState(isLive);
+  if(isLive){
+    liveStartedAt=stored.startedAt||Date.now();
+    updateLiveTimer();
+    clearInterval(liveTimer);liveTimer=setInterval(updateLiveTimer,1000);
+  }else{
+    liveStartedAt=null;clearInterval(liveTimer);liveTimer=null;
+    const timer=$('#liveElapsed');if(timer)timer.textContent='00:00';
+  }
+  const mode=$('#modeChip');
+  if(mode){mode.textContent=isLive?'LIVE':'AUTO DJ';mode.classList.toggle('is-live',isLive)}
+  const go=$('#goLiveButton');
+  if(go){go.textContent=isLive?'● Live Now':'Go Live';go.classList.toggle('state-live',isLive)}
+  const health=$('.station-health');
+  if(health){health.querySelector('strong').textContent=isLive?'ON AIR — LIVE':'Station online';health.querySelector('small').textContent=isLive?'Live DJ feed active':'Demo mode';}
+}
+new MutationObserver(()=>syncBroadcastVisualState()).observe(document.body,{attributes:true,attributeFilter:['class']});
+// A reload cannot keep a browser microphone broadcast alive, so clear stale demo state on Studio boot.
+syncBroadcastVisualState(true);
 
 function showView(name){
   $$('.view').forEach(v=>v.classList.remove('active'));
@@ -66,12 +106,6 @@ function pulseButton(btn,label,kind='success',ms=1300){
     btn.textContent=original;
     btn.disabled=false;
   },ms);
-}
-function setToggle(btn,on,onLabel,offLabel,kind='active'){
-  if(!btn)return;
-  btn.classList.toggle(`state-${kind}`,on);
-  btn.setAttribute('aria-pressed',String(on));
-  btn.textContent=on?onLabel:offLabel;
 }
 
 let playing=true;
@@ -108,44 +142,12 @@ $$('.queue-button').forEach(btn=>btn.addEventListener('click',()=>{
   btn.textContent='Queued ✓';btn.classList.add('state-success');btn.disabled=true;
 }));
 
-let isLive=false;
-function setLive(next){
-  isLive=next;
-  document.body.classList.toggle('live-broadcasting',isLive);
-  if(isLive){
-    liveStartedAt=Date.now();
-    updateLiveTimer();
-    clearInterval(liveTimer);liveTimer=setInterval(updateLiveTimer,1000);
-  }else{
-    liveStartedAt=null;clearInterval(liveTimer);liveTimer=null;
-    const timer=$('#liveElapsed');if(timer)timer.textContent='00:00';
-  }
-  $('#modeChip').textContent=isLive?'LIVE':'AUTO DJ';
-  $('#modeChip').classList.toggle('is-live',isLive);
-  $('#liveStateTitle').textContent=isLive?'You are live — listeners can hear this feed':'Ready to broadcast';
-  const liveToggle=$('#liveToggle'),go=$('#goLiveButton');
-  liveToggle.textContent=isLive?'End Live Broadcast':'Start Live Broadcast';
-  liveToggle.classList.toggle('state-danger',isLive);
-  go.textContent=isLive?'● Live Now':'Go Live';go.classList.toggle('state-live',isLive);
-  $('#micVisual').classList.toggle('active',isLive);
-  document.querySelector('.live-dot').style.background=isLive?'#62ef98':'#54d68a';
-  const health=$('.station-health');
-  if(health){health.querySelector('strong').textContent=isLive?'ON AIR — LIVE': 'Station online';health.querySelector('small').textContent=isLive?'Live DJ feed active':'Demo mode';}
-}
-$('#goLiveButton')?.addEventListener('click',()=>{showView('live');if(!isLive)setLive(true)});
-$('#liveToggle')?.addEventListener('click',()=>setLive(!isLive));
-
-let micMuted=false;
-$('#micMute')?.addEventListener('click',e=>{
-  micMuted=!micMuted;
-  setToggle(e.currentTarget,micMuted,'Mic muted','Mute mic','warning');
-  $('#micVisual').style.opacity=micMuted?'.22':'1';
-});
-[['#micLevel','#micValue'],['#musicLevel','#musicValue'],['#masterLevel','#masterValue']].forEach(([a,b])=>$(a)?.addEventListener('input',e=>$(b).textContent=`${e.target.value}%`));
+// Dashboard only opens the mixer. live-studio.js alone decides when a broadcast starts or ends.
+$('#goLiveButton')?.addEventListener('click',()=>showView('live'));
 
 setInterval(()=>{
-  const base=isLive?52:47,n=base+Math.floor(Math.random()*7)-3;
-  $('#listenersNow').textContent=n;$('#liveListeners').textContent=n;
+  const base=document.body.classList.contains('live-broadcasting')?52:47,n=base+Math.floor(Math.random()*7)-3;
+  const listeners=$('#listenersNow');if(listeners)listeners.textContent=n;
 },4500);
 
 // ----- Library / playlists demo -----
