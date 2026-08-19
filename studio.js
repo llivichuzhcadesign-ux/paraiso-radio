@@ -2,6 +2,42 @@
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const views={dashboard:'Dashboard',live:'Live Studio',library:'Library',schedule:'Schedule',djs:'DJs & Hosts',analytics:'Analytics',settings:'Settings'};
 
+// Global ON AIR visual system. Kept here so it follows the live state everywhere in Studio.
+const liveStyle=document.createElement('style');
+liveStyle.textContent=`
+  #globalLiveBanner{position:fixed;top:10px;left:50%;transform:translate(-50%,-18px);z-index:120;display:flex;align-items:center;gap:10px;padding:9px 15px;border-radius:999px;background:#0f2b1a;border:1px solid #48dc82;color:#baf7d0;font-weight:900;font-size:.76rem;letter-spacing:.1em;box-shadow:0 8px 32px rgba(72,220,130,.18);opacity:0;pointer-events:none;transition:.2s ease}
+  #globalLiveBanner .onair-dot{width:9px;height:9px;border-radius:50%;background:#62ef98;box-shadow:0 0 0 6px rgba(98,239,152,.12);animation:onAirPulse 1.15s ease-in-out infinite}
+  #globalLiveBanner b{color:#fff}
+  #globalLiveBanner time{font-variant-numeric:tabular-nums;color:#8ceeb0}
+  @keyframes onAirPulse{50%{opacity:.45;transform:scale(.72)}}
+  body.live-broadcasting{padding:5px}
+  body.live-broadcasting::before{content:"";position:fixed;inset:0;z-index:110;pointer-events:none;border:5px solid #54e890;box-shadow:inset 0 0 28px rgba(84,232,144,.13),0 0 30px rgba(84,232,144,.16);animation:liveFrame 2s ease-in-out infinite}
+  body.live-broadcasting #globalLiveBanner{opacity:1;transform:translate(-50%,0)}
+  body.live-broadcasting .studio-header{border-bottom-color:#315b40}
+  body.live-broadcasting .sidebar{border-right-color:#315b40}
+  body.live-broadcasting .station-health .health-dot{background:#62ef98;box-shadow:0 0 0 6px rgba(98,239,152,.12)}
+  body.live-broadcasting .station-health strong{color:#8ff0b2}
+  body.live-broadcasting .station-health small{color:#62c987}
+  body.live-broadcasting .live-chip.is-live{background:#12341f!important;border-color:#3c9a60!important;color:#8ff0b2!important;box-shadow:0 0 0 4px rgba(84,232,144,.08)!important}
+  body.live-broadcasting .nav-item[data-view="live"]{box-shadow:inset 3px 0 0 #62ef98}
+  @keyframes liveFrame{50%{box-shadow:inset 0 0 38px rgba(84,232,144,.18),0 0 40px rgba(84,232,144,.22)}}
+  @media(max-width:700px){#globalLiveBanner{top:7px;padding:7px 11px;font-size:.66rem}body.live-broadcasting::before{border-width:4px}}
+  @media(prefers-reduced-motion:reduce){body.live-broadcasting::before,#globalLiveBanner .onair-dot{animation:none}}
+`;
+document.head.appendChild(liveStyle);
+const liveBanner=document.createElement('div');
+liveBanner.id='globalLiveBanner';
+liveBanner.setAttribute('role','status');
+liveBanner.setAttribute('aria-live','polite');
+liveBanner.innerHTML='<span class="onair-dot"></span><b>ON AIR</b><span>LIVE BROADCAST</span><time id="liveElapsed">00:00</time>';
+document.body.appendChild(liveBanner);
+let liveStartedAt=null,liveTimer=null;
+function updateLiveTimer(){
+  if(!liveStartedAt)return;
+  const sec=Math.floor((Date.now()-liveStartedAt)/1000),m=Math.floor(sec/60),s=sec%60;
+  const el=$('#liveElapsed');if(el)el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
 function showView(name){
   $$('.view').forEach(v=>v.classList.remove('active'));
   $(`#view-${name}`)?.classList.add('active');
@@ -75,15 +111,26 @@ $$('.queue-button').forEach(btn=>btn.addEventListener('click',()=>{
 let isLive=false;
 function setLive(next){
   isLive=next;
+  document.body.classList.toggle('live-broadcasting',isLive);
+  if(isLive){
+    liveStartedAt=Date.now();
+    updateLiveTimer();
+    clearInterval(liveTimer);liveTimer=setInterval(updateLiveTimer,1000);
+  }else{
+    liveStartedAt=null;clearInterval(liveTimer);liveTimer=null;
+    const timer=$('#liveElapsed');if(timer)timer.textContent='00:00';
+  }
   $('#modeChip').textContent=isLive?'LIVE':'AUTO DJ';
   $('#modeChip').classList.toggle('is-live',isLive);
-  $('#liveStateTitle').textContent=isLive?'You are live':'Ready to broadcast';
+  $('#liveStateTitle').textContent=isLive?'You are live — listeners can hear this feed':'Ready to broadcast';
   const liveToggle=$('#liveToggle'),go=$('#goLiveButton');
   liveToggle.textContent=isLive?'End Live Broadcast':'Start Live Broadcast';
   liveToggle.classList.toggle('state-danger',isLive);
   go.textContent=isLive?'● Live Now':'Go Live';go.classList.toggle('state-live',isLive);
   $('#micVisual').classList.toggle('active',isLive);
-  document.querySelector('.live-dot').style.background=isLive?'#ff5f62':'#54d68a';
+  document.querySelector('.live-dot').style.background=isLive?'#62ef98':'#54d68a';
+  const health=$('.station-health');
+  if(health){health.querySelector('strong').textContent=isLive?'ON AIR — LIVE': 'Station online';health.querySelector('small').textContent=isLive?'Live DJ feed active':'Demo mode';}
 }
 $('#goLiveButton')?.addEventListener('click',()=>{showView('live');if(!isLive)setLive(true)});
 $('#liveToggle')?.addEventListener('click',()=>setLive(!isLive));
