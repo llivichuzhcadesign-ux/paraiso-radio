@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0b0c" />
+  <title>PARAÍSO — Live Radio</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="brand">PARAÍSO</div>
+        <div class="tagline" id="tagline">New York • Ecuador</div>
+      </div>
+      <div class="signal-pill" id="signalPill" aria-live="polite">
+        <span class="signal-dot"></span>
+        <span id="signalText">AUTO DJ</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="nowPlayingHeading">
+        <div class="cover-wrap">
+          <img id="coverArt" class="cover-art hidden" alt="" />
+          <div id="coverFallback" class="cover-fallback" aria-hidden="true">
+            <div class="cover-wordmark">P</div>
+          </div>
+        </div>
+
+        <div class="track">
+          <p class="eyebrow" id="nowPlayingHeading">NOW PLAYING</p>
+          <h1 id="songTitle">Loading station…</h1>
+          <p class="artist" id="artistName">PARAÍSO</p>
+
+          <div class="progress-block">
+            <div class="progress-track" aria-hidden="true">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-times">
+              <span id="elapsedTime">0:00</span>
+              <span class="live-word">LIVE</span>
+              <span id="durationTime">0:00</span>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button class="play-button" id="playButton" type="button" aria-label="Play live radio">
+              <span id="playIcon">▶</span>
+            </button>
+
+            <div class="volume-group">
+              <button class="icon-button" id="muteButton" type="button" aria-label="Mute">
+                <span id="volumeIcon">◉</span>
+              </button>
+              <input id="volumeSlider" type="range" min="0" max="1" step="0.05" value="0.85" aria-label="Volume" />
+            </div>
+          </div>
+
+          <div class="status-line" id="playerStatus" aria-live="polite">Ready</div>
+        </div>
+      </section>
+
+      <section class="info-grid">
+        <article class="panel on-air-panel">
+          <p class="eyebrow">ON AIR</p>
+          <div class="on-air-row">
+            <div>
+              <h2 id="hostName">AutoDJ</h2>
+              <p id="showName">Continuous music</p>
+            </div>
+            <div class="listener-box">
+              <strong id="listenerCount">—</strong>
+              <span>listeners</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="section-title-row">
+            <div>
+              <p class="eyebrow">RECENTLY PLAYED</p>
+              <h2>Track history</h2>
+            </div>
+            <button class="text-button" id="refreshButton" type="button">Refresh</button>
+          </div>
+          <ol class="history-list" id="historyList"></ol>
+        </article>
+      </section>
+    </main>
+
+    <footer>
+      <span id="footerStation">PARAÍSO</span>
+      <span class="footer-separator">•</span>
+      <span>Live internet radio</span>
+    </footer>
+  </div>
+
+  <audio id="radioAudio" preload="none"></audio>
+
+  <script src="./config.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
