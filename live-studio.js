@@ -17,7 +17,7 @@ const attachableIds=new Set(['music','carts','requests']);
 let micStream=null,audioContext=null,sourceNode=null,micAnalyser=null,rafId=null;
 let micInputGain=null,programBusGain=null,masterMonitorGain=null,cueMonitorGain=null;
 let selectedShow='',isLive=false,signalReady=false,activeCue=null;
-const channelNodes=new Map();
+const channelNodes=new Map(); // id -> {source,gain}
 const channelMuted={mic:false,music:false,carts:false,requests:false,master:false};
 
 const consoleShell=document.createElement('div');
@@ -106,12 +106,13 @@ function ensureAudioContext(){
 }
 function updateAudioGains(){
   if(micInputGain)micInputGain.gain.value=channelMuted.mic?0:Number($('#micLevel').value)/100;
+  for(const [id,entry] of channelNodes)entry.gain.gain.value=channelMuted[id]?0:Number($(`#${id}Level`).value)/100;
   if(programBusGain)programBusGain.gain.value=Number($('#masterLevel').value)/100;
   if(masterMonitorGain)masterMonitorGain.gain.value=(activeCue==='master'&&!channelMuted.master)?1:0;
 }
 function disconnectCueRouting(){
   try{sourceNode?.disconnect(cueMonitorGain)}catch{}
-  for(const node of channelNodes.values())try{node.disconnect(cueMonitorGain)}catch{}
+  for(const entry of channelNodes.values())try{entry.gain.disconnect(cueMonitorGain)}catch{}
   activeCue=null;
   $$('.channel-strip').forEach(s=>s.classList.remove('is-cued'));
   $$('[data-channel-cue]').forEach(b=>b.classList.remove('active'));
@@ -125,7 +126,7 @@ function setCue(id){
   const strip=$(`.channel-strip[data-channel="${id}"]`),btn=$(`[data-channel-cue="${id}"]`);strip?.classList.add('is-cued');btn?.classList.add('active');
   if(id==='mic'&&micInputGain){micInputGain.connect(cueMonitorGain);$('#monitorReadout').textContent='MIC';}
   else if(id==='master'){masterMonitorGain.gain.value=channelMuted.master?0:1;$('#monitorReadout').textContent='MASTER';}
-  else if(channelNodes.has(id)){channelNodes.get(id).connect(cueMonitorGain);$('#monitorReadout').textContent=id.toUpperCase();}
+  else if(channelNodes.has(id)){channelNodes.get(id).gain.connect(cueMonitorGain);$('#monitorReadout').textContent=id.toUpperCase();}
   else{$('#monitorReadout').textContent=`${id.toUpperCase()} · DEMO`;showError(`${id.toUpperCase()} has no real audio source yet. CUE is armed as a routing hook only.`)}
   $('#monitorDetail').textContent=CUE_HELP;updateAudioGains();
 }
@@ -166,9 +167,31 @@ function animateDemoMeters(){
 }
 
 window.PARAISO_LIVE_AUDIO={
-  attachSource(id,node){if(!attachableIds.has(id)||!node||typeof node.connect!=='function')return false;ensureAudioContext();channelNodes.set(id,node);node.connect(programBusGain);const badge=$(`.channel-strip[data-channel="${id}"] .channel-source-badge`);if(badge){badge.textContent='REAL';badge.classList.remove('demo');badge.classList.add('real')}updateAudioGains();if(activeCue===id){disconnectCueRouting();activeCue=id;$(`.channel-strip[data-channel="${id}"]`)?.classList.add('is-cued');$(`[data-channel-cue="${id}"]`)?.classList.add('active');node.connect(cueMonitorGain);$('#monitorReadout').textContent=id.toUpperCase();$('#monitorDetail').textContent=CUE_HELP}updateProgramStates();return true},
-  detachSource(id){const node=channelNodes.get(id);if(node)try{node.disconnect(programBusGain)}catch{};channelNodes.delete(id);const badge=$(`.channel-strip[data-channel="${id}"] .channel-source-badge`);if(badge){badge.textContent='DEMO SOURCE';badge.classList.remove('real');badge.classList.add('demo')}if(activeCue===id)disconnectCueRouting();updateProgramStates()},
-  get context(){return audioContext},get programBus(){return programBusGain}
+  attachSource(id,node){
+    if(!attachableIds.has(id)||!node||typeof node.connect!=='function')return false;
+    ensureAudioContext();
+    if(channelNodes.has(id))this.detachSource(id);
+    const gain=audioContext.createGain();
+    node.connect(gain);gain.connect(programBusGain);
+    channelNodes.set(id,{source:node,gain});
+    const badge=$(`.channel-strip[data-channel="${id}"] .channel-source-badge`);
+    if(badge){badge.textContent='REAL';badge.classList.remove('demo');badge.classList.add('real')}
+    updateAudioGains();
+    if(activeCue===id){disconnectCueRouting();setCue(id)}
+    updateProgramStates();
+    return true;
+  },
+  detachSource(id){
+    const entry=channelNodes.get(id);
+    if(entry){try{entry.source.disconnect(entry.gain)}catch{};try{entry.gain.disconnect()}catch{}}
+    channelNodes.delete(id);
+    const badge=$(`.channel-strip[data-channel="${id}"] .channel-source-badge`);
+    if(badge){badge.textContent='DEMO SOURCE';badge.classList.remove('real');badge.classList.add('demo')}
+    if(activeCue===id)disconnectCueRouting();
+    updateProgramStates();
+  },
+  get context(){return audioContext},
+  get programBus(){return programBusGain}
 };
 
 function setLive(next){
@@ -188,5 +211,12 @@ reviewButton.addEventListener('click',()=>openConfirm(false));airButton.addEvent
 $('#goLiveButton')?.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();document.querySelector('.nav-item[data-view="live"]')?.click();setTimeout(()=>$('#broadcastConsole')?.scrollIntoView({behavior:'smooth',block:'start'}),80)},true);
 window.addEventListener('beforeunload',()=>{if(micStream)micStream.getTracks().forEach(t=>t.stop())});
 
-updateProgramStates();updateReadyState();connectMicrophone();
+function syncLiveViewMic(){
+  const open=liveView.classList.contains('active');
+  if(open&&!micStream)connectMicrophone();
+  if(!open&&micStream&&!isLive)stopMic();
+}
+new MutationObserver(syncLiveViewMic).observe(liveView,{attributes:true,attributeFilter:['class']});
+document.querySelector('.nav-item[data-view="live"]')?.addEventListener('click',()=>setTimeout(syncLiveViewMic,0));
+updateProgramStates();updateReadyState();syncLiveViewMic();
 })();
