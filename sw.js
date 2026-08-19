@@ -1,0 +1,1 @@
+const CACHE='paraiso-radio-v1';const ASSETS=['./','./index.html','./styles.css','./config.js','./app.js','./manifest.webmanifest'];self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)))});
