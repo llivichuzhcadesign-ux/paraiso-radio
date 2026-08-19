@@ -3,10 +3,10 @@ const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const liveView=$('#view-live');
 if(!liveView)return;
 
-if(!document.querySelector('link[data-live-phase1]')){
+if(!document.querySelector('link[href*="live-studio-phase1.css"]')){
   const link=document.createElement('link');
   link.rel='stylesheet';
-  link.href='./live-studio-phase1.css?v=1';
+  link.href='./live-studio-phase1.css?v=2';
   link.dataset.livePhase1='true';
   document.head.appendChild(link);
 }
@@ -40,7 +40,17 @@ consoleShell.innerHTML=`
     </div>
   </section>
   <section class="mixer-surface">
-    <div class="mixer-header"><div><p class="eyebrow">MIXER</p><h3>Broadcast channels</h3></div><p class="cue-help"><b>CUE</b> ${CUE_HELP}</p></div>
+    <div class="mixer-header">
+      <div><p class="eyebrow">MIXER</p><h3>Broadcast channels</h3></div>
+      <div class="cue-tools">
+        <label class="cue-volume-control" title="Controls headphone cue level only. Listeners are not affected.">
+          <span>CUE VOLUME</span>
+          <input id="cueVolume" type="range" min="0" max="100" value="85" aria-label="Cue headphone volume">
+          <output id="cueVolumeValue">85%</output>
+        </label>
+        <p class="cue-help"><b>CUE</b> ${CUE_HELP}</p>
+      </div>
+    </div>
     <div class="channel-bank">
       ${channelStrip('mic','MIC','Voice',72,true,'real')}
       ${channelStrip('music','MUSIC','Live music',64,false,'demo')}
@@ -64,7 +74,7 @@ liveView.insertBefore(consoleShell,liveView.firstChild);
 
 function channelStrip(id,label,sub,value,realMeter,sourceState){
   const badge=sourceState==='real'?'REAL':'DEMO SOURCE';
-  return `<div class="channel-strip" data-channel="${id}"><div class="channel-label"><div class="channel-title-row"><b>${label}</b><span class="channel-source-badge ${sourceState}">${badge}</span></div><span>${sub}</span><em class="channel-program-state" id="${id}ProgramState">NOT ON PROGRAM</em></div><div class="channel-meter" id="${id}Meter">${'<i></i>'.repeat(18)}</div><div class="channel-db"><span>0</span><span>-12</span><span>-24</span><span>-48</span></div><input class="channel-fader" id="${id}Level" type="range" min="0" max="100" value="${value}" aria-label="${label} level"><output id="${id}Value">${value}%</output><div class="channel-buttons"><button class="channel-btn mute" data-channel-mute="${id}">MUTE</button><button class="channel-btn cue" data-channel-cue="${id}" title="${CUE_HELP}" aria-label="Cue ${label}. ${CUE_HELP}">CUE</button></div>${realMeter?'<span class="real-meter-badge">LIVE METER</span>':''}</div>`;
+  return `<div class="channel-strip" data-channel="${id}"><div class="channel-label"><div class="channel-title-row"><b>${label}</b><span class="channel-source-badge ${sourceState}">${badge}</span></div><span>${sub}</span><em class="channel-program-state" id="${id}ProgramState">NOT ON PROGRAM</em></div><div class="channel-meter" id="${id}Meter">${'<i></i>'.repeat(18)}</div><div class="channel-db"><span>0</span><span>-12</span><span>-24</span><span>-48</span></div><input class="channel-fader" id="${id}Level" type="range" min="0" max="100" value="${value}" aria-label="${label} level"><output id="${id}Value">${value}%</output><div class="channel-buttons"><button class="channel-btn mute" data-channel-mute="${id}">MUTE</button><button class="channel-btn cue" data-channel-cue="${id}" title="${CUE_HELP}" aria-label="Cue ${label}. ${CUE_HELP}" aria-pressed="false"><span class="cue-word-tag">CUE</span><span class="cue-button-status">OFF</span></button></div>${realMeter?'<span class="real-meter-badge">LIVE METER</span>':''}</div>`;
 }
 function queueRow(n,title,sub){return `<div class="deck-row"><span class="deck-number">${n}</span><div class="deck-copy"><strong>${title}</strong><small>${sub}</small></div><button class="queue-action">Play next</button></div>`}
 function requestRow(initial,name,sub){return `<div class="incoming-row"><span class="incoming-avatar">${initial}</span><div class="incoming-copy"><strong>${name}</strong><small>${sub}</small></div><button class="request-action">Accept</button></div>`}
@@ -75,7 +85,7 @@ dialog.id='liveConfirmDialog';
 dialog.innerHTML=`<form method="dialog"><div class="confirm-icon" id="confirmIcon">●</div><p class="eyebrow" id="confirmEyebrow">READY TO BROADCAST</p><h3 id="confirmTitle">Go on air?</h3><p id="confirmCopy">AutoDJ will hand control to this local live board. Backend streaming is still demo-only.</p><div class="confirm-summary"><div><span>Show</span><strong id="confirmShow">—</strong></div><div><span>Microphone</span><strong id="confirmMic">—</strong></div><div><span>Cue</span><strong id="confirmMonitor">Off</strong></div><div><span>Fallback</span><strong>AutoDJ ready</strong></div></div><div class="confirm-actions"><button class="confirm-cancel" value="cancel">Cancel</button><button class="confirm-onair" id="confirmOnAir" value="default" type="button">GO ON AIR</button></div></form>`;
 document.body.appendChild(dialog);
 
-const showSelect=$('#liveShowSelect'),micSelect=$('#micDeviceSelect'),outputSelect=$('#outputDeviceSelect'),reviewButton=$('#reviewButton'),airButton=$('#airButton');
+const showSelect=$('#liveShowSelect'),micSelect=$('#micDeviceSelect'),outputSelect=$('#outputDeviceSelect'),reviewButton=$('#reviewButton'),airButton=$('#airButton'),cueVolume=$('#cueVolume');
 
 function setCheck(id,ready,detail){const el=$(id);if(!el)return;el.classList.toggle('ready',ready);el.querySelector('i').textContent=ready?'✓':id==='#checkMic'?'1':id==='#checkSignal'?'2':'3';el.querySelector('small').textContent=detail;}
 function updateReadyState(){
@@ -101,21 +111,36 @@ async function enumerateDevices(){
   if([...outputSelect.options].some(o=>o.value===currentOut))outputSelect.value=currentOut;
 }
 function ensureAudioContext(){
-  if(!audioContext){audioContext=new (window.AudioContext||window.webkitAudioContext)();programBusGain=audioContext.createGain();masterMonitorGain=audioContext.createGain();cueMonitorGain=audioContext.createGain();programBusGain.connect(masterMonitorGain);masterMonitorGain.connect(audioContext.destination);masterMonitorGain.gain.value=0;cueMonitorGain.gain.value=.85;}
+  if(!audioContext){
+    audioContext=new (window.AudioContext||window.webkitAudioContext)();
+    programBusGain=audioContext.createGain();
+    masterMonitorGain=audioContext.createGain();
+    cueMonitorGain=audioContext.createGain();
+    programBusGain.connect(masterMonitorGain);
+    cueMonitorGain.connect(audioContext.destination);
+    masterMonitorGain.gain.value=1;
+    cueMonitorGain.gain.value=Number(cueVolume.value)/100;
+  }
   if(audioContext.state==='suspended')audioContext.resume().catch(()=>{});
 }
 function updateAudioGains(){
   if(micInputGain)micInputGain.gain.value=channelMuted.mic?0:Number($('#micLevel').value)/100;
   for(const [id,entry] of channelNodes)entry.gain.gain.value=channelMuted[id]?0:Number($(`#${id}Level`).value)/100;
   if(programBusGain)programBusGain.gain.value=Number($('#masterLevel').value)/100;
-  if(masterMonitorGain)masterMonitorGain.gain.value=(activeCue==='master'&&!channelMuted.master)?1:0;
+  if(masterMonitorGain)masterMonitorGain.gain.value=channelMuted.master?0:1;
+  if(cueMonitorGain)cueMonitorGain.gain.value=Number(cueVolume.value)/100;
 }
 function disconnectCueRouting(){
-  try{sourceNode?.disconnect(cueMonitorGain)}catch{}
+  try{micInputGain?.disconnect(cueMonitorGain)}catch{}
+  try{masterMonitorGain?.disconnect(cueMonitorGain)}catch{}
   for(const entry of channelNodes.values())try{entry.gain.disconnect(cueMonitorGain)}catch{}
   activeCue=null;
   $$('.channel-strip').forEach(s=>s.classList.remove('is-cued'));
-  $$('[data-channel-cue]').forEach(b=>b.classList.remove('active'));
+  $$('[data-channel-cue]').forEach(b=>{
+    b.classList.remove('active');
+    b.setAttribute('aria-pressed','false');
+    const status=b.querySelector('.cue-button-status');if(status)status.textContent='OFF';
+  });
   $('#monitorReadout').textContent='OFF';$('#monitorDetail').textContent=CUE_HELP;
   updateAudioGains();
 }
@@ -123,12 +148,17 @@ function setCue(id){
   ensureAudioContext();
   if(activeCue===id){disconnectCueRouting();return;}
   disconnectCueRouting();activeCue=id;
-  const strip=$(`.channel-strip[data-channel="${id}"]`),btn=$(`[data-channel-cue="${id}"]`);strip?.classList.add('is-cued');btn?.classList.add('active');
+  const strip=$(`.channel-strip[data-channel="${id}"]`),btn=$(`[data-channel-cue="${id}"]`);
+  strip?.classList.add('is-cued');
+  btn?.classList.add('active');
+  btn?.setAttribute('aria-pressed','true');
+  const status=btn?.querySelector('.cue-button-status');if(status)status.textContent='ON';
   if(id==='mic'&&micInputGain){micInputGain.connect(cueMonitorGain);$('#monitorReadout').textContent='MIC';}
-  else if(id==='master'){masterMonitorGain.gain.value=channelMuted.master?0:1;$('#monitorReadout').textContent='MASTER';}
+  else if(id==='master'&&masterMonitorGain){masterMonitorGain.connect(cueMonitorGain);$('#monitorReadout').textContent='MASTER';}
   else if(channelNodes.has(id)){channelNodes.get(id).gain.connect(cueMonitorGain);$('#monitorReadout').textContent=id.toUpperCase();}
   else{$('#monitorReadout').textContent=`${id.toUpperCase()} · DEMO`;showError(`${id.toUpperCase()} has no real audio source yet. CUE is armed as a routing hook only.`)}
-  $('#monitorDetail').textContent=CUE_HELP;updateAudioGains();
+  $('#monitorDetail').textContent=`CUE ${cueVolume.value}% · ${CUE_HELP}`;
+  updateAudioGains();
 }
 function updateProgramStates(){
   ['mic','music','carts','requests','master'].forEach(id=>{
@@ -154,6 +184,7 @@ async function connectMicrophone(){
     const constraints=micSelect.value?{audio:{deviceId:{exact:micSelect.value},echoCancellation:false,noiseSuppression:false,autoGainControl:false}}:{audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}};
     micStream=await navigator.mediaDevices.getUserMedia(constraints);ensureAudioContext();await enumerateDevices();
     sourceNode=audioContext.createMediaStreamSource(micStream);micAnalyser=audioContext.createAnalyser();micAnalyser.fftSize=256;micAnalyser.smoothingTimeConstant=.72;micInputGain=audioContext.createGain();sourceNode.connect(micAnalyser);sourceNode.connect(micInputGain);micInputGain.connect(programBusGain);updateAudioGains();
+    if(activeCue==='mic')micInputGain.connect(cueMonitorGain);
     $('#inputHint').textContent='Microphone connected';updateReadyState();
     const data=new Uint8Array(micAnalyser.frequencyBinCount);let healthyFrames=0;
     const draw=()=>{micAnalyser.getByteFrequencyData(data);const avg=data.reduce((a,b)=>a+b,0)/data.length,n=Math.min(1,avg/88),micLevel=n*(channelMuted.mic?0:Number($('#micLevel').value)/100),masterLevel=micLevel*(Number($('#masterLevel').value)/100);paintMeter('micMeter',n);paintMeter('masterMeter',masterLevel);$('#inputDb').textContent=`${Math.round(-60+n*58)} dB`;if(n>.025){healthyFrames++;$('#inputHint').textContent='Signal detected'}if(healthyFrames>8&&!signalReady){signalReady=true;updateReadyState()}animateDemoMeters();rafId=requestAnimationFrame(draw)};draw();
@@ -197,11 +228,12 @@ window.PARAISO_LIVE_AUDIO={
 function setLive(next){
   isLive=next;document.body.classList.toggle('live-broadcasting',isLive);$('#consoleStatusLight').classList.toggle('live',isLive);$('#programReadout').textContent=isLive?'LIVE PROGRAM':'AutoDJ';$('#programDetail').textContent=isLive?'Local program bus active — backend transport still demo':'Live feed not armed';const airStatus=$('#airStatus');airStatus.classList.toggle('live',isLive);airStatus.querySelector('span').textContent=isLive?'ON AIR':'OFF AIR';showSelect.disabled=isLive;micSelect.disabled=isLive;if(isLive){airButton.disabled=false;airButton.classList.add('end');airButton.querySelector('b').textContent='END BROADCAST';airButton.querySelector('small').textContent='Return control to AutoDJ'}updateReadyState();
 }
-function openConfirm(end=false){$('#confirmShow').textContent=selectedShow||'Live broadcast';$('#confirmMic').textContent=micSelect.selectedOptions[0]?.textContent||'Default microphone';$('#confirmMonitor').textContent=activeCue?activeCue.toUpperCase():'Off';$('#confirmEyebrow').textContent=end?'END LIVE BROADCAST':'READY TO BROADCAST';$('#confirmTitle').textContent=end?'Return to AutoDJ?':'Go on air?';$('#confirmCopy').textContent=end?'The local live program will end and AutoDJ demo mode will resume.':'The local board will enter ON AIR state. No backend stream is being faked.';$('#confirmIcon').textContent=end?'■':'●';const action=$('#confirmOnAir');action.textContent=end?'END BROADCAST':'GO ON AIR';action.classList.toggle('danger',end);action.dataset.mode=end?'end':'start';dialog.showModal()}
+function openConfirm(end=false){$('#confirmShow').textContent=selectedShow||'Live broadcast';$('#confirmMic').textContent=micSelect.selectedOptions[0]?.textContent||'Default microphone';$('#confirmMonitor').textContent=activeCue?`${activeCue.toUpperCase()} · ${cueVolume.value}%`:'Off';$('#confirmEyebrow').textContent=end?'END LIVE BROADCAST':'READY TO BROADCAST';$('#confirmTitle').textContent=end?'Return to AutoDJ?':'Go on air?';$('#confirmCopy').textContent=end?'The local live program will end and AutoDJ demo mode will resume.':'The local board will enter ON AIR state. No backend stream is being faked.';$('#confirmIcon').textContent=end?'■':'●';const action=$('#confirmOnAir');action.textContent=end?'END BROADCAST':'GO ON AIR';action.classList.toggle('danger',end);action.dataset.mode=end?'end':'start';dialog.showModal()}
 
 showSelect.addEventListener('change',()=>{selectedShow=showSelect.value;updateReadyState()});
 micSelect.addEventListener('change',connectMicrophone);
 outputSelect.addEventListener('change',async()=>{if(audioContext&&typeof audioContext.setSinkId==='function'){try{await audioContext.setSinkId(outputSelect.value||'default');$('#monitorDetail').textContent='Headphone output updated.'}catch{showError('This browser could not switch to that output. System default will be used.')}}else if(outputSelect.value)showError('This browser uses the system audio output for monitoring.')});
+cueVolume.addEventListener('input',e=>{$('#cueVolumeValue').textContent=`${e.target.value}%`;if(cueMonitorGain)cueMonitorGain.gain.value=Number(e.target.value)/100;if(activeCue)$('#monitorDetail').textContent=`CUE ${e.target.value}% · ${CUE_HELP}`;});
 [['mic','master','music','carts','requests']].flat().forEach(id=>$(`#${id}Level`).addEventListener('input',e=>{$(`#${id}Value`).textContent=`${e.target.value}%`;updateAudioGains()}));
 $$('[data-channel-mute]').forEach(btn=>btn.addEventListener('click',()=>{const id=btn.dataset.channelMute;channelMuted[id]=!channelMuted[id];btn.classList.toggle('active',channelMuted[id]);btn.textContent=channelMuted[id]?'MUTED':'MUTE';updateMuteVisual(id);updateAudioGains()}));
 $$('[data-channel-cue]').forEach(btn=>btn.addEventListener('click',()=>setCue(btn.dataset.channelCue)));
