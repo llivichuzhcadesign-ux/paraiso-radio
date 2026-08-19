@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#0a0b0d" />
   <title>PARAÍSO Studio</title>
   <link rel="stylesheet" href="./studio.css" />
+  <link rel="stylesheet" href="./live-studio.css" />
 </head>
 <body>
   <div class="studio-shell">
@@ -99,7 +100,7 @@
                 <label>Master<input id="masterLevel" type="range" min="0" max="100" value="82"><b id="masterValue">82%</b></label>
               </div>
               <div class="live-actions"><button class="mute-button" id="micMute">Mute mic</button><button class="go-live-button large" id="liveToggle">Start Live Broadcast</button></div>
-              <p class="demo-note">Demo only — no microphone or server is connected yet.</p>
+              <p class="demo-note">Demo only — no live server is connected yet.</p>
             </article>
 
             <aside class="live-side">
@@ -112,13 +113,7 @@
 
         <section class="view" id="view-library">
           <div class="section-toolbar"><div><p class="eyebrow">MUSIC LIBRARY</p><h2>1,248 tracks</h2></div><button class="go-live-button">+ Add music</button></div>
-          <div class="library-table panel">
-            <div class="table-head"><span>TRACK</span><span>PLAYLIST</span><span>LENGTH</span><span>LAST PLAYED</span><span></span></div>
-            <div class="table-row"><div><b>Nuestro Juramento</b><small>Julio Jaramillo</small></div><span>Boleros</span><span>3:23</span><span>Today</span><button>•••</button></div>
-            <div class="table-row"><div><b>Fatalidad</b><small>Julio Jaramillo</small></div><span>Boleros</span><span>3:38</span><span>Today</span><button>•••</button></div>
-            <div class="table-row"><div><b>Guayaquil de Mis Amores</b><small>Traditional</small></div><span>Ecuador</span><span>3:10</span><span>Yesterday</span><button>•••</button></div>
-            <div class="table-row"><div><b>Latin Evening</b><small>PARAÍSO Radio</small></div><span>Station ID</span><span>4:00</span><span>Yesterday</span><button>•••</button></div>
-          </div>
+          <div class="library-table panel"><div class="table-head"><span>TRACK</span><span>PLAYLIST</span><span>LENGTH</span><span>LAST PLAYED</span><span></span></div></div>
         </section>
 
         <section class="view" id="view-schedule">
@@ -149,5 +144,6 @@
     </div>
   </div>
   <script src="./studio.js"></script>
+  <script src="./live-studio.js"></script>
 </body>
 </html>
