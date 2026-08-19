@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0b0d" />
+  <title>PARAÍSO Studio</title>
+  <link rel="stylesheet" href="./studio.css" />
+</head>
+<body>
+  <div class="studio-shell">
+    <aside class="sidebar">
+      <a class="studio-brand" href="./studio.html"><span class="brand-mark">P</span><span><strong>PARAÍSO</strong><small>STUDIO</small></span></a>
+      <nav class="studio-nav" aria-label="Studio navigation">
+        <button class="nav-item active" data-view="dashboard"><span>⌂</span>Dashboard</button>
+        <button class="nav-item" data-view="live"><span>●</span>Live Studio</button>
+        <button class="nav-item" data-view="library"><span>♪</span>Library</button>
+        <button class="nav-item" data-view="schedule"><span>◫</span>Schedule</button>
+        <button class="nav-item" data-view="djs"><span>◉</span>DJs</button>
+        <button class="nav-item" data-view="analytics"><span>↗</span>Analytics</button>
+        <button class="nav-item" data-view="settings"><span>⚙</span>Settings</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <a href="./index.html" class="public-link">Open public station ↗</a>
+        <small>Demo control room</small>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="studio-header">
+        <button class="menu-button" id="menuButton" aria-label="Open menu">☰</button>
+        <div>
+          <p class="eyebrow">CONTROL ROOM</p>
+          <h1 id="viewTitle">Dashboard</h1>
+        </div>
+        <div class="header-right">
+          <div class="station-health"><span class="health-dot"></span><div><strong>Station online</strong><small>Demo mode</small></div></div>
+          <button class="profile-button" aria-label="Studio profile">SL</button>
+        </div>
+      </header>
+
+      <main class="studio-main">
+        <section class="view active" id="view-dashboard">
+          <div class="metrics-grid">
+            <article class="metric-card"><span>LISTENERS NOW</span><strong id="listenersNow">47</strong><small>+12% vs last hour</small></article>
+            <article class="metric-card"><span>PEAK TODAY</span><strong>83</strong><small>10:42 AM</small></article>
+            <article class="metric-card"><span>TRACKS</span><strong>1,248</strong><small>14 playlists</small></article>
+            <article class="metric-card"><span>STREAM UPTIME</span><strong>99.9%</strong><small>Demo status</small></article>
+          </div>
+
+          <div class="dashboard-grid">
+            <article class="panel now-playing-panel">
+              <div class="panel-heading"><div><p class="eyebrow">NOW PLAYING</p><h2 id="dashTrackTitle">Nuestro Juramento</h2><p id="dashTrackArtist">Julio Jaramillo</p></div><span class="live-chip" id="modeChip">AUTO DJ</span></div>
+              <div class="track-visual">
+                <div class="studio-art">P</div>
+                <div class="track-detail">
+                  <div class="waveform" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                  <div class="timeline"><span id="trackElapsed">1:17</span><div><i id="trackProgress"></i></div><span id="trackDuration">3:23</span></div>
+                  <div class="transport-row"><button class="control-button" id="dashPlay">❚❚</button><button class="control-button" id="skipButton">Skip track →</button><button class="go-live-button" id="goLiveButton">Go Live</button></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="panel next-panel">
+              <div class="panel-heading"><div><p class="eyebrow">UP NEXT</p><h2>Today</h2></div><button class="ghost-button" data-jump="schedule">Edit schedule</button></div>
+              <div class="timeline-list">
+                <div class="timeline-item current"><span>NOW</span><div><strong>Continuous Music</strong><small>AutoDJ</small></div></div>
+                <div class="timeline-item"><span>12:00</span><div><strong>Cumbia de Oro</strong><small>Playlist • 2 hours</small></div></div>
+                <div class="timeline-item"><span>4:00</span><div><strong>Salsa NY</strong><small>Playlist • 2 hours</small></div></div>
+                <div class="timeline-item"><span>9:00</span><div><strong>Después de Medianoche</strong><small>Playlist • 3 hours</small></div></div>
+              </div>
+            </article>
+
+            <article class="panel requests-panel">
+              <div class="panel-heading"><div><p class="eyebrow">REQUESTS</p><h2>Listener inbox</h2></div><span class="count-badge">3 new</span></div>
+              <div class="request-list" id="requestList">
+                <div class="request-row"><span class="avatar">M</span><div><strong>Maria</strong><p>“Fatalidad” — Julio Jaramillo</p><small>Queens • 2 min ago</small></div><button class="queue-button">+ Queue</button></div>
+                <div class="request-row"><span class="avatar">C</span><div><strong>Carlos</strong><p>“Guayaquil de Mis Amores”</p><small>Brooklyn • 7 min ago</small></div><button class="queue-button">+ Queue</button></div>
+                <div class="request-row"><span class="avatar">A</span><div><strong>Ana</strong><p>“Nuestro Juramento”</p><small>Cuenca • 12 min ago</small></div><button class="queue-button">+ Queue</button></div>
+              </div>
+            </article>
+
+            <article class="panel audience-panel">
+              <div class="panel-heading"><div><p class="eyebrow">AUDIENCE</p><h2>Last 6 hours</h2></div><span class="trend">↗ 18%</span></div>
+              <div class="bar-chart" id="barChart" aria-label="Demo listener chart"><i style="--h:34%"></i><i style="--h:42%"></i><i style="--h:38%"></i><i style="--h:56%"></i><i style="--h:62%"></i><i style="--h:78%"></i><i style="--h:68%"></i><i style="--h:82%"></i><i style="--h:74%"></i><i style="--h:88%"></i><i style="--h:76%"></i><i style="--h:92%"></i></div>
+              <div class="chart-labels"><span>6h ago</span><span>Now</span></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="view-live">
+          <div class="live-layout">
+            <article class="panel live-console">
+              <div class="live-state"><span class="live-dot"></span><div><p class="eyebrow">LIVE STUDIO</p><h2 id="liveStateTitle">Ready to broadcast</h2></div></div>
+              <div class="mic-visual" id="micVisual"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+              <div class="mixer-grid">
+                <label>Microphone<input id="micLevel" type="range" min="0" max="100" value="72"><b id="micValue">72%</b></label>
+                <label>Music<input id="musicLevel" type="range" min="0" max="100" value="64"><b id="musicValue">64%</b></label>
+                <label>Master<input id="masterLevel" type="range" min="0" max="100" value="82"><b id="masterValue">82%</b></label>
+              </div>
+              <div class="live-actions"><button class="mute-button" id="micMute">Mute mic</button><button class="go-live-button large" id="liveToggle">Start Live Broadcast</button></div>
+              <p class="demo-note">Demo only — no microphone or server is connected yet.</p>
+            </article>
+
+            <aside class="live-side">
+              <article class="panel"><p class="eyebrow">CURRENT TRACK</p><h3>Fatalidad</h3><p class="muted">Julio Jaramillo</p><button class="ghost-button full">Fade out & stop</button></article>
+              <article class="panel"><p class="eyebrow">LIVE LISTENERS</p><div class="big-number" id="liveListeners">47</div><p class="muted">Demo audience</p></article>
+              <article class="panel"><p class="eyebrow">REQUEST QUEUE</p><div class="mini-request"><strong>Maria</strong><span>Fatalidad</span></div><div class="mini-request"><strong>Carlos</strong><span>Guayaquil de Mis Amores</span></div></article>
+            </aside>
+          </div>
+        </section>
+
+        <section class="view" id="view-library">
+          <div class="section-toolbar"><div><p class="eyebrow">MUSIC LIBRARY</p><h2>1,248 tracks</h2></div><button class="go-live-button">+ Add music</button></div>
+          <div class="library-table panel">
+            <div class="table-head"><span>TRACK</span><span>PLAYLIST</span><span>LENGTH</span><span>LAST PLAYED</span><span></span></div>
+            <div class="table-row"><div><b>Nuestro Juramento</b><small>Julio Jaramillo</small></div><span>Boleros</span><span>3:23</span><span>Today</span><button>•••</button></div>
+            <div class="table-row"><div><b>Fatalidad</b><small>Julio Jaramillo</small></div><span>Boleros</span><span>3:38</span><span>Today</span><button>•••</button></div>
+            <div class="table-row"><div><b>Guayaquil de Mis Amores</b><small>Traditional</small></div><span>Ecuador</span><span>3:10</span><span>Yesterday</span><button>•••</button></div>
+            <div class="table-row"><div><b>Latin Evening</b><small>PARAÍSO Radio</small></div><span>Station ID</span><span>4:00</span><span>Yesterday</span><button>•••</button></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-schedule">
+          <div class="section-toolbar"><div><p class="eyebrow">PROGRAMMING</p><h2>Weekly schedule</h2></div><button class="go-live-button">+ Add show</button></div>
+          <div class="schedule-board panel">
+            <div class="schedule-day"><b>MON</b><div class="slot morning">7:00<br><strong>Despierta Ecuador</strong></div><div class="slot noon">12:00<br><strong>Cumbia de Oro</strong></div><div class="slot evening">16:00<br><strong>Salsa NY</strong></div></div>
+            <div class="schedule-day"><b>TUE</b><div class="slot morning">7:00<br><strong>Despierta Ecuador</strong></div><div class="slot noon">12:00<br><strong>Cumbia de Oro</strong></div><div class="slot evening">21:00<br><strong>Después de Medianoche</strong></div></div>
+            <div class="schedule-day"><b>WED</b><div class="slot morning">7:00<br><strong>Despierta Ecuador</strong></div><div class="slot noon">12:00<br><strong>Cumbia de Oro</strong></div><div class="slot evening">19:00<br><strong>Sebastián Live</strong></div></div>
+            <div class="schedule-day"><b>THU</b><div class="slot morning">7:00<br><strong>Despierta Ecuador</strong></div><div class="slot noon">12:00<br><strong>Cumbia de Oro</strong></div><div class="slot evening">16:00<br><strong>Salsa NY</strong></div></div>
+            <div class="schedule-day"><b>FRI</b><div class="slot morning">7:00<br><strong>Despierta Ecuador</strong></div><div class="slot noon">12:00<br><strong>Cumbia de Oro</strong></div><div class="slot evening">20:00<br><strong>Viernes en Paraíso</strong></div></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-djs">
+          <div class="section-toolbar"><div><p class="eyebrow">TEAM</p><h2>DJs & hosts</h2></div><button class="go-live-button">+ Add DJ</button></div>
+          <div class="dj-grid"><article class="panel dj-card"><span class="dj-avatar">SL</span><div><h3>Sebastián</h3><p>Owner • Host</p><small>Live access enabled</small></div></article><article class="panel dj-card"><span class="dj-avatar muted-avatar">DJ</span><div><h3>Guest DJ</h3><p>Guest host</p><small>Invite pending</small></div></article></div>
+        </section>
+
+        <section class="view" id="view-analytics">
+          <div class="metrics-grid"><article class="metric-card"><span>TOTAL LISTENING</span><strong>186h</strong><small>This week</small></article><article class="metric-card"><span>AVG. SESSION</span><strong>38m</strong><small>+4m vs last week</small></article><article class="metric-card"><span>TOP CITY</span><strong>Queens</strong><small>34% of listeners</small></article><article class="metric-card"><span>TOP COUNTRY</span><strong>USA</strong><small>Ecuador #2</small></article></div>
+          <article class="panel analytics-panel"><p class="eyebrow">DEMO ANALYTICS</p><h2>Where listeners are coming from</h2><div class="geo-list"><div><span>Queens, NY</span><b>34%</b></div><div><span>Cuenca, Ecuador</span><b>21%</b></div><div><span>Guayaquil, Ecuador</span><b>17%</b></div><div><span>Brooklyn, NY</span><b>12%</b></div><div><span>Other</span><b>16%</b></div></div></article>
+        </section>
+
+        <section class="view" id="view-settings">
+          <article class="panel settings-panel"><p class="eyebrow">STATION SETTINGS</p><h2>PARAÍSO identity</h2><label>Station name<input value="PARAÍSO"></label><label>Tagline<input value="New York • Ecuador"></label><label>Default timezone<select><option>America/New_York</option></select></label><label>Default mode<select><option>AutoDJ</option><option>Live</option></select></label><button class="go-live-button">Save demo settings</button></article>
+        </section>
+      </main>
+    </div>
+  </div>
+  <script src="./studio.js"></script>
+</body>
+</html>
