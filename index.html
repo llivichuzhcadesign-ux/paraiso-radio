@@ -3,103 +3,161 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b0b0c" />
+  <meta name="theme-color" content="#090a0b" />
+  <meta name="description" content="PARAÍSO — New York • Ecuador. Live music, culture and radio." />
   <title>PARAÍSO — Live Radio</title>
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
+  <div class="noise" aria-hidden="true"></div>
   <div class="app-shell">
     <header class="topbar">
-      <div>
-        <div class="brand">PARAÍSO</div>
-        <div class="tagline" id="tagline">New York • Ecuador</div>
-      </div>
-      <div class="signal-pill" id="signalPill" aria-live="polite">
-        <span class="signal-dot"></span>
-        <span id="signalText">AUTO DJ</span>
+      <a class="brand-lockup" href="#listen" aria-label="PARAÍSO home">
+        <span class="brand-mark">P</span>
+        <span><strong>PARAÍSO</strong><small>NEW YORK • ECUADOR</small></span>
+      </a>
+
+      <nav class="desktop-nav" aria-label="Primary navigation">
+        <a href="#listen">Listen</a>
+        <a href="#schedule">Schedule</a>
+        <a href="#shows">Shows</a>
+        <a href="#about">About</a>
+      </nav>
+
+      <div class="header-actions">
+        <div class="signal-pill" id="signalPill" aria-live="polite">
+          <span class="signal-dot"></span><span id="signalText">AUTO DJ</span>
+        </div>
       </div>
     </header>
 
     <main>
-      <section class="hero" aria-labelledby="nowPlayingHeading">
-        <div class="cover-wrap">
-          <img id="coverArt" class="cover-art hidden" alt="" />
-          <div id="coverFallback" class="cover-fallback" aria-hidden="true">
-            <div class="cover-wordmark">P</div>
+      <section class="hero" id="listen" aria-labelledby="songTitle">
+        <div class="hero-copy">
+          <div class="world-clocks" aria-label="Station clocks">
+            <span><b id="nyClock">--:--</b> NEW YORK</span>
+            <i></i>
+            <span><b id="ecClock">--:--</b> ECUADOR</span>
+          </div>
+
+          <p class="eyebrow">LIVE FROM TWO HOMES</p>
+          <h1>Music between<br><em>New York + Ecuador.</em></h1>
+          <p class="hero-intro">A living radio station for Ecuadorian sound, Latin classics, conversations and late-night discoveries.</p>
+
+          <div class="hero-actions">
+            <button class="primary-button" id="heroPlayButton" type="button"><span id="heroPlayIcon">▶</span> Listen live</button>
+            <button class="secondary-button" id="requestButton" type="button">Request a song</button>
           </div>
         </div>
 
-        <div class="track">
-          <p class="eyebrow" id="nowPlayingHeading">NOW PLAYING</p>
-          <h1 id="songTitle">Loading station…</h1>
-          <p class="artist" id="artistName">PARAÍSO</p>
+        <div class="player-card" aria-label="Live radio player">
+          <div class="cover-wrap">
+            <img id="coverArt" class="cover-art hidden" alt="" />
+            <div id="coverFallback" class="cover-fallback" aria-hidden="true">
+              <span class="orbit orbit-a"></span><span class="orbit orbit-b"></span>
+              <div class="cover-wordmark">P</div>
+              <div class="cover-caption">PARAÍSO<br>RADIO</div>
+            </div>
+            <div class="live-badge">LIVE</div>
+          </div>
+
+          <div class="track-meta">
+            <p class="eyebrow">NOW PLAYING</p>
+            <h2 id="songTitle">Loading station…</h2>
+            <p class="artist" id="artistName">PARAÍSO</p>
+          </div>
 
           <div class="progress-block">
-            <div class="progress-track" aria-hidden="true">
-              <div class="progress-fill" id="progressFill"></div>
-            </div>
-            <div class="progress-times">
-              <span id="elapsedTime">0:00</span>
-              <span class="live-word">LIVE</span>
-              <span id="durationTime">0:00</span>
-            </div>
+            <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+            <div class="progress-times"><span id="elapsedTime">0:00</span><span id="durationTime">0:00</span></div>
           </div>
 
-          <div class="controls">
-            <button class="play-button" id="playButton" type="button" aria-label="Play live radio">
-              <span id="playIcon">▶</span>
-            </button>
-
+          <div class="player-controls">
+            <button class="round-button" id="playButton" type="button" aria-label="Play live radio"><span id="playIcon">▶</span></button>
             <div class="volume-group">
-              <button class="icon-button" id="muteButton" type="button" aria-label="Mute">
-                <span id="volumeIcon">◉</span>
-              </button>
+              <button class="icon-button" id="muteButton" type="button" aria-label="Mute">◉</button>
               <input id="volumeSlider" type="range" min="0" max="1" step="0.05" value="0.85" aria-label="Volume" />
             </div>
+            <div class="listener-mini"><b id="listenerCount">—</b><span>LISTENING</span></div>
           </div>
-
           <div class="status-line" id="playerStatus" aria-live="polite">Ready</div>
         </div>
       </section>
 
-      <section class="info-grid">
-        <article class="panel on-air-panel">
-          <p class="eyebrow">ON AIR</p>
-          <div class="on-air-row">
-            <div>
-              <h2 id="hostName">AutoDJ</h2>
-              <p id="showName">Continuous music</p>
-            </div>
-            <div class="listener-box">
-              <strong id="listenerCount">—</strong>
-              <span>listeners</span>
-            </div>
-          </div>
-        </article>
+      <section class="now-strip" aria-label="On air information">
+        <div><span class="strip-label">ON AIR</span><strong id="hostName">AutoDJ</strong><small id="showName">Continuous music</small></div>
+        <div class="strip-divider"></div>
+        <div><span class="strip-label">UP NEXT</span><strong id="upNextShow">Cumbia de Oro</strong><small id="upNextTime">12:00 PM ET</small></div>
+        <a href="#schedule">Full schedule <span>↗</span></a>
+      </section>
 
-        <article class="panel">
-          <div class="section-title-row">
-            <div>
-              <p class="eyebrow">RECENTLY PLAYED</p>
-              <h2>Track history</h2>
-            </div>
-            <button class="text-button" id="refreshButton" type="button">Refresh</button>
-          </div>
-          <ol class="history-list" id="historyList"></ol>
-        </article>
+      <section class="section" id="schedule">
+        <div class="section-heading">
+          <div><p class="eyebrow">PROGRAMMING</p><h2>Your week on PARAÍSO.</h2></div>
+          <p>Times shown in New York time. The schedule is demo content for now and can be edited before launch.</p>
+        </div>
+        <div class="day-tabs" id="dayTabs" role="tablist" aria-label="Schedule days"></div>
+        <div class="schedule-list" id="scheduleList"></div>
+      </section>
+
+      <section class="section" id="shows">
+        <div class="section-heading">
+          <div><p class="eyebrow">FEATURED SHOWS</p><h2>Different moods. Same frequency.</h2></div>
+        </div>
+        <div class="show-grid">
+          <article class="show-card show-a"><span>01</span><div><p>MORNINGS</p><h3>Despierta Ecuador</h3><small>Pasillos, boleros & a soft start.</small></div></article>
+          <article class="show-card show-b"><span>02</span><div><p>AFTERNOONS</p><h3>Cumbia de Oro</h3><small>Ecuadorian and Latin cumbia classics.</small></div></article>
+          <article class="show-card show-c"><span>03</span><div><p>EVENINGS</p><h3>Salsa NY</h3><small>From Quito and Guayaquil to Queens and the Bronx.</small></div></article>
+          <article class="show-card show-d"><span>04</span><div><p>LATE NIGHT</p><h3>Después de Medianoche</h3><small>Deep cuts, romance and nocturnal radio.</small></div></article>
+        </div>
+      </section>
+
+      <section class="section listening-section">
+        <div class="section-heading compact">
+          <div><p class="eyebrow">RECENTLY PLAYED</p><h2>What you just heard.</h2></div>
+          <button class="text-button" id="refreshButton" type="button">Refresh demo</button>
+        </div>
+        <ol class="history-list" id="historyList"></ol>
+      </section>
+
+      <section class="about-section" id="about">
+        <div class="about-mark">P</div>
+        <div>
+          <p class="eyebrow">ABOUT PARAÍSO</p>
+          <h2>Radio made to feel like a place.</h2>
+          <p>PARAÍSO connects Ecuador and New York through music, memory, community and live voices. The public experience is being built first; the broadcast engine comes later.</p>
+        </div>
       </section>
     </main>
 
     <footer>
-      <span id="footerStation">PARAÍSO</span>
-      <span class="footer-separator">•</span>
-      <span>Live internet radio</span>
+      <div class="brand-lockup footer-brand"><span class="brand-mark">P</span><span><strong>PARAÍSO</strong><small>LIVE INTERNET RADIO</small></span></div>
+      <p>New York • Ecuador</p>
+      <p>V2 Demo</p>
     </footer>
   </div>
 
-  <audio id="radioAudio" preload="none"></audio>
+  <div class="mobile-player" id="mobilePlayer">
+    <div class="mobile-track"><span class="mini-art">P</span><div><strong id="mobileTitle">PARAÍSO</strong><small id="mobileArtist">Live Radio</small></div></div>
+    <button id="mobilePlayButton" type="button" aria-label="Play live radio"><span id="mobilePlayIcon">▶</span></button>
+  </div>
 
+  <dialog class="request-modal" id="requestModal">
+    <form method="dialog" id="requestForm">
+      <button class="modal-close" value="cancel" aria-label="Close">×</button>
+      <p class="eyebrow">REQUEST LINE</p>
+      <h2>What should PARAÍSO play?</h2>
+      <p class="modal-copy">This is a demo request form. We’ll connect it to the real station request system later.</p>
+      <label>Song<input id="requestSong" required placeholder="Song title" /></label>
+      <label>Artist<input id="requestArtist" required placeholder="Artist" /></label>
+      <label>Your name <span>(optional)</span><input id="requestName" placeholder="Name" /></label>
+      <button class="primary-button modal-submit" value="default" type="submit">Send request</button>
+      <p class="request-feedback" id="requestFeedback" aria-live="polite"></p>
+    </form>
+  </dialog>
+
+  <audio id="radioAudio" preload="none"></audio>
   <script src="./config.js"></script>
   <script src="./app.js"></script>
 </body>
