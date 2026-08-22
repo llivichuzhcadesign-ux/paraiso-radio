@@ -1,0 +1,238 @@
+/* PARAÍSO Studio — Phase A: Nocturnal Audio Lab
+   Surface-only visual layer. No layout, routing, or behavior changes. */
+:root{
+  --lab-bg-0:#040507;
+  --lab-bg-1:#07090d;
+  --lab-bg-2:#0b0e13;
+  --lab-bg-3:#10151c;
+  --lab-bg-4:#151b23;
+  --lab-line:rgba(255,255,255,.045);
+  --lab-line-faint:rgba(255,255,255,.025);
+  --lab-highlight:rgba(255,255,255,.055);
+  --lab-text:#f3f5f7;
+  --lab-soft:#aeb6c1;
+  --lab-deep-shadow:0 22px 55px rgba(0,0,0,.48);
+  --lab-mid-shadow:0 12px 30px rgba(0,0,0,.34);
+  --lab-small-shadow:0 7px 18px rgba(0,0,0,.28);
+  --lab-inner-top:inset 0 1px 0 rgba(255,255,255,.045);
+  --lab-inner-bottom:inset 0 -1px 0 rgba(255,255,255,.018);
+  --lab-blue:63,140,255;
+  --lab-amber:241,162,58;
+  --lab-violet:165,106,244;
+  --lab-rose:223,95,133;
+  --lab-green:88,223,145;
+}
+
+html{background:var(--lab-bg-0)!important}
+body{
+  color:var(--lab-text)!important;
+  background:
+    radial-gradient(80rem 54rem at 77% -14%,rgba(78,96,255,.09),transparent 55%),
+    radial-gradient(60rem 50rem at 36% 60%,rgba(147,70,255,.055),transparent 62%),
+    radial-gradient(44rem 38rem at 96% 72%,rgba(43,208,145,.035),transparent 64%),
+    linear-gradient(180deg,#05070a 0%,#040507 58%,#030405 100%)!important;
+}
+
+/* Main architectural surfaces: depth replaces outlines. */
+.sidebar{
+  background:
+    radial-gradient(34rem 40rem at -8% 12%,rgba(78,96,255,.045),transparent 56%),
+    linear-gradient(180deg,#080a0d 0%,#050608 100%)!important;
+  border-right-color:var(--lab-line-faint)!important;
+  box-shadow:inset -1px 0 0 rgba(255,255,255,.018),14px 0 42px rgba(0,0,0,.18)!important;
+}
+.studio-header{
+  background:linear-gradient(180deg,rgba(8,10,13,.96),rgba(5,7,10,.92))!important;
+  border-bottom-color:var(--lab-line-faint)!important;
+  box-shadow:0 15px 38px rgba(0,0,0,.2),inset 0 -1px 0 rgba(255,255,255,.018)!important;
+}
+.brand-mark,.profile-button,.menu-button,.sidebar-collapse-button{
+  border-color:var(--lab-line)!important;
+  background:linear-gradient(180deg,#151a20,#0a0d11)!important;
+  box-shadow:var(--lab-small-shadow),var(--lab-inner-top)!important;
+}
+
+.nav-item{
+  border-color:transparent!important;
+  background:transparent!important;
+  color:#a7aeb8!important;
+}
+.nav-item:hover{
+  border-color:transparent!important;
+  background:linear-gradient(90deg,rgba(255,255,255,.035),rgba(255,255,255,.012))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 8px 20px rgba(0,0,0,.18)!important;
+}
+.nav-item.active{
+  border-color:transparent!important;
+  color:#f7f9fb!important;
+  background:
+    radial-gradient(18rem 8rem at 12% 50%,rgba(86,128,255,.12),transparent 66%),
+    linear-gradient(90deg,rgba(255,255,255,.048),rgba(255,255,255,.016))!important;
+  box-shadow:
+    inset 3px 0 0 rgba(123,159,255,.78),
+    inset 0 1px 0 rgba(255,255,255,.05),
+    0 12px 26px rgba(0,0,0,.24),
+    0 0 26px rgba(70,104,255,.035)!important;
+}
+
+/* Shared cards and panels. */
+.panel,.metric-card,.panel-soft,.library-summary article,.playlist-card,.studio-dialog,.live-confirm-dialog{
+  border-color:var(--lab-line-faint)!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.018),rgba(255,255,255,0) 22%),
+    linear-gradient(180deg,var(--lab-bg-3),var(--lab-bg-2))!important;
+  box-shadow:var(--lab-mid-shadow),var(--lab-inner-top),var(--lab-inner-bottom)!important;
+}
+.metric-card{
+  background:
+    radial-gradient(24rem 12rem at 20% -10%,rgba(92,120,255,.055),transparent 65%),
+    linear-gradient(180deg,#10151b,#090c10)!important;
+}
+.metric-card strong{color:#f7f8fa!important;text-shadow:0 4px 18px rgba(255,255,255,.035)}
+.eyebrow{color:#858e9a!important}
+
+/* Broadcast console shell becomes a deep equipment chassis. */
+.broadcast-console{
+  border-color:var(--lab-line-faint)!important;
+  background:
+    radial-gradient(70rem 30rem at 50% -12%,rgba(86,103,205,.075),transparent 58%),
+    linear-gradient(180deg,#0e1218 0%,#080b10 48%,#05070a 100%)!important;
+  box-shadow:0 32px 85px rgba(0,0,0,.52),inset 0 1px 0 rgba(255,255,255,.038),inset 0 -40px 80px rgba(0,0,0,.2)!important;
+}
+.console-topbar,.setup-ribbon,.mixer-surface,.console-dock,.air-bar{
+  border-color:var(--lab-line-faint)!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,0) 28%),
+    linear-gradient(180deg,#11161d,#090d12)!important;
+  box-shadow:var(--lab-mid-shadow),var(--lab-inner-top),var(--lab-inner-bottom)!important;
+}
+.console-topbar{
+  background:
+    radial-gradient(38rem 16rem at 10% 0%,rgba(75,116,255,.07),transparent 62%),
+    linear-gradient(180deg,#121820,#0a0e13)!important;
+}
+.setup-ribbon{box-shadow:inset 0 1px 0 rgba(255,255,255,.035),inset 0 -12px 28px rgba(0,0,0,.15),0 10px 26px rgba(0,0,0,.22)!important}
+
+.ribbon-field select,.cue-volume-control{
+  border-color:var(--lab-line)!important;
+  background:linear-gradient(180deg,#151b23,#0b0f14)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 7px 16px rgba(0,0,0,.2)!important;
+}
+.ribbon-field select:focus{border-color:rgba(111,151,255,.3)!important;box-shadow:0 0 0 3px rgba(83,119,255,.08),inset 0 1px 0 rgba(255,255,255,.035)!important}
+
+/* Health/status tiles: illuminated indicators rather than framed cards. */
+.health-check,.health-icon-tile{
+  border-color:transparent!important;
+  background:linear-gradient(180deg,#12171e,#0a0e13)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 7px 17px rgba(0,0,0,.25)!important;
+}
+.health-check.ready,.health-icon-tile.ready{
+  border-color:transparent!important;
+  background:
+    radial-gradient(circle at 28% 35%,rgba(var(--lab-green),.11),transparent 54%),
+    linear-gradient(180deg,#0d1d15,#08110d)!important;
+  box-shadow:inset 0 1px 0 rgba(132,255,181,.07),0 8px 20px rgba(0,0,0,.26),0 0 24px rgba(var(--lab-green),.045)!important;
+}
+
+/* Mixer: use darkness and internal light instead of a drawn perimeter. */
+.mixer-surface{
+  background:
+    radial-gradient(60rem 24rem at 50% -8%,rgba(95,113,210,.065),transparent 58%),
+    linear-gradient(180deg,#10151c,#080b10)!important;
+}
+.channel-bank{
+  border-color:transparent!important;
+  background:linear-gradient(180deg,#05070a,#030507)!important;
+  box-shadow:inset 0 14px 38px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.018),0 12px 28px rgba(0,0,0,.22)!important;
+}
+.channel-strip{
+  border-color:var(--lab-line-faint)!important;
+  background:
+    radial-gradient(22rem 15rem at 50% -7%,rgba(255,255,255,.035),transparent 56%),
+    linear-gradient(180deg,#141a22 0%,#0b0f14 44%,#07090d 100%)!important;
+  box-shadow:0 16px 34px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.045),inset 0 -1px 0 rgba(255,255,255,.018)!important;
+}
+.channel-strip[data-channel="mic"]{box-shadow:0 16px 34px rgba(0,0,0,.38),0 -8px 28px rgba(var(--lab-blue),.035),inset 0 1px 0 rgba(var(--lab-blue),.11)!important}
+.channel-strip[data-channel="music"]{box-shadow:0 16px 34px rgba(0,0,0,.38),0 -8px 28px rgba(var(--lab-amber),.03),inset 0 1px 0 rgba(var(--lab-amber),.1)!important}
+.channel-strip[data-channel="carts"]{box-shadow:0 16px 34px rgba(0,0,0,.38),0 -8px 28px rgba(var(--lab-violet),.035),inset 0 1px 0 rgba(var(--lab-violet),.1)!important}
+.channel-strip[data-channel="requests"]{box-shadow:0 16px 34px rgba(0,0,0,.38),0 -8px 28px rgba(var(--lab-rose),.03),inset 0 1px 0 rgba(var(--lab-rose),.1)!important}
+.channel-strip[data-channel="master"]{box-shadow:0 16px 34px rgba(0,0,0,.38),0 -8px 28px rgba(var(--lab-green),.035),inset 0 1px 0 rgba(var(--lab-green),.1)!important}
+
+.channel-strip.is-cued{border-color:rgba(95,157,211,.12)!important;box-shadow:0 17px 36px rgba(0,0,0,.4),0 0 31px rgba(62,121,172,.14),inset 0 1px 0 rgba(120,190,255,.13)!important}
+.channel-meter{
+  border-color:transparent!important;
+  background:linear-gradient(180deg,#07090c,#030405)!important;
+  box-shadow:inset 0 0 24px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.022)!important;
+}
+.channel-meter i{background:#171c22!important}
+.channel-meter i.lit{background:#48d986!important;box-shadow:0 0 8px rgba(72,217,134,.24)!important}
+.channel-meter i.hot{background:#e9bd4f!important;box-shadow:0 0 9px rgba(233,189,79,.28)!important}
+.channel-meter i.peak{background:#ef5d69!important;box-shadow:0 0 11px rgba(239,93,105,.32)!important}
+
+/* Controls should feel tactile, not outlined. */
+.channel-btn,.console-button,.air-review,.queue-action,.request-action,.control-button,.ghost-button,.mute-button,.queue-button{
+  border-color:var(--lab-line)!important;
+  background:linear-gradient(180deg,#181e26,#0d1116)!important;
+  box-shadow:0 7px 15px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.045)!important;
+}
+.channel-btn:hover,.console-button:hover,.air-review:hover,.control-button:hover,.ghost-button:hover,.mute-button:hover,.queue-button:hover{
+  border-color:rgba(255,255,255,.075)!important;
+  background:linear-gradient(180deg,#1d242d,#10151b)!important;
+}
+.channel-btn.cue.active{
+  border-color:rgba(104,180,240,.12)!important;
+  background:linear-gradient(180deg,#15334d,#0b2032)!important;
+  box-shadow:0 8px 18px rgba(0,0,0,.3),0 0 24px rgba(62,145,210,.16),inset 0 1px 0 rgba(160,220,255,.1)!important;
+}
+.channel-strip.is-muted .channel-btn.mute,.channel-btn.mute.active{
+  border-color:rgba(210,89,96,.12)!important;
+  background:linear-gradient(180deg,#3a181c,#1d0d10)!important;
+  box-shadow:0 8px 18px rgba(0,0,0,.3),0 0 20px rgba(208,75,84,.09),inset 0 1px 0 rgba(255,160,166,.07)!important;
+}
+
+/* Readout wells and secondary equipment. */
+.monitor-readout>div,.geo-list>div{
+  border-color:transparent!important;
+  background:linear-gradient(180deg,#080b0f,#05070a)!important;
+  box-shadow:inset 0 0 26px rgba(0,0,0,.46),inset 0 1px 0 rgba(255,255,255,.025)!important;
+}
+.console-dock{
+  background:
+    radial-gradient(30rem 12rem at 14% 0%,rgba(92,112,210,.04),transparent 62%),
+    linear-gradient(180deg,#10151b,#080b0f)!important;
+}
+.air-bar{
+  background:linear-gradient(180deg,rgba(13,18,23,.97),rgba(7,10,13,.97))!important;
+  box-shadow:0 20px 45px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.045)!important;
+}
+.air-button{
+  border-color:transparent!important;
+  background:linear-gradient(180deg,#12351f,#081d11)!important;
+  box-shadow:0 10px 24px rgba(0,0,0,.3),0 0 26px rgba(var(--lab-green),.055),inset 0 1px 0 rgba(137,255,180,.08)!important;
+}
+.air-button.end{
+  border-color:transparent!important;
+  background:linear-gradient(180deg,#40171b,#210b0e)!important;
+  box-shadow:0 10px 24px rgba(0,0,0,.3),0 0 24px rgba(235,82,93,.06),inset 0 1px 0 rgba(255,155,162,.07)!important;
+}
+
+/* Softer dividers throughout non-live sections. */
+.timeline-item,.request-row,.mini-request,.deck-row,.incoming-row,.library-track-row{
+  border-top-color:rgba(255,255,255,.035)!important;
+}
+.library-tabs{border-bottom-color:rgba(255,255,255,.035)!important}
+
+/* Preserve clarity in active broadcast mode while keeping the lab aesthetic. */
+body.live-broadcasting .broadcast-console{
+  box-shadow:0 32px 85px rgba(0,0,0,.52),0 0 44px rgba(var(--lab-green),.045),inset 0 1px 0 rgba(140,255,184,.05)!important;
+}
+
+@media(max-width:900px){
+  body{background:linear-gradient(180deg,#05070a,#030405)!important}
+  .broadcast-console{box-shadow:0 22px 50px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.035)!important}
+  .channel-strip{box-shadow:0 12px 24px rgba(0,0,0,.36),inset 0 1px 0 rgba(255,255,255,.038)!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .nav-item,.channel-strip,.channel-btn,.air-button{transition:none!important}
+}
