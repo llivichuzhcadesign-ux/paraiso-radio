@@ -1,0 +1,218 @@
+/* PARAÍSO Studio — Phase B: Typographic Identity */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+:root{
+  --font-ui:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-display:'Space Grotesk','Inter',sans-serif;
+  --font-mono:'JetBrains Mono','SFMono-Regular',Consolas,monospace;
+  --type-main:#f4f6f8;
+  --type-soft:#adb5c0;
+  --type-muted:#747e8b;
+  --type-dim:#5f6874;
+}
+
+body,.broadcast-console button,.broadcast-console select,.broadcast-console input{
+  font-family:var(--font-ui)!important;
+  font-feature-settings:'kern' 1,'liga' 1;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+/* Display voice — confident, creative, slightly architectural. */
+h1,h2,h3,
+.studio-header h1,
+.section-toolbar h2,
+.panel-heading h2,
+.console-identity h2,
+.mixer-header h3,
+.dock-heading h3,
+.live-side h3,
+.settings-panel h2,
+.analytics-panel h2,
+.studio-dialog h3,
+.live-confirm-dialog h3{
+  font-family:var(--font-display)!important;
+  color:var(--type-main)!important;
+  letter-spacing:-.035em;
+  font-weight:650;
+}
+
+.studio-header h1{
+  font-size:clamp(1.5rem,2vw,1.9rem)!important;
+  line-height:1.02;
+  letter-spacing:-.045em;
+}
+.console-identity h2{font-size:1.38rem!important;letter-spacing:-.04em}
+.mixer-header h3{font-size:1.24rem!important;letter-spacing:-.035em}
+.section-toolbar h2{letter-spacing:-.045em!important}
+
+/* Brand becomes its own compact wordmark. */
+.studio-brand strong{
+  font-family:var(--font-display)!important;
+  font-size:1.02rem;
+  font-weight:700;
+  letter-spacing:.025em;
+  line-height:1;
+}
+.studio-brand small{
+  font-family:var(--font-mono)!important;
+  font-size:.57rem!important;
+  font-weight:600;
+  letter-spacing:.22em!important;
+  color:#858f9c!important;
+}
+.brand-mark{
+  font-family:var(--font-display)!important;
+  font-weight:700!important;
+  letter-spacing:-.05em;
+}
+
+/* Small system language — technical but elegant. */
+.eyebrow,
+.channel-program-state,
+.channel-source-badge,
+.real-meter-badge,
+.console-ready-pill,
+.ribbon-field>span,
+.monitor-readout span,
+.air-status span,
+.metric-card>span,
+.library-summary article>span,
+.cue-volume-control>span,
+.request-tag,
+.live-chip,
+.count-badge{
+  font-family:var(--font-mono)!important;
+  font-weight:600!important;
+  text-transform:uppercase;
+  letter-spacing:.12em!important;
+}
+.eyebrow{
+  font-size:.64rem!important;
+  line-height:1.25;
+  color:#89939f!important;
+}
+
+/* Technical numbers — make the console feel instrument-grade. */
+.channel-strip>output,
+#cueVolumeValue,
+#inputDb,
+.monitor-readout strong,
+.metric-card strong,
+.big-number,
+#liveElapsed,
+.timeline>span,
+.channel-db,
+.health-speed,
+.confirm-summary strong,
+.library-summary article>b{
+  font-family:var(--font-mono)!important;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:-.035em;
+}
+.channel-strip>output{
+  font-weight:700!important;
+  color:#eef2f6!important;
+}
+#inputDb,.monitor-readout strong{font-weight:650!important}
+.channel-db{font-weight:600!important;letter-spacing:-.02em}
+.metric-card strong{
+  font-weight:700!important;
+  letter-spacing:-.055em;
+}
+
+/* Channel names get more identity, supporting copy stays restrained. */
+.channel-label b,
+.channel-title-row>b{
+  font-family:var(--font-display)!important;
+  font-size:.83rem!important;
+  font-weight:700!important;
+  letter-spacing:.075em!important;
+}
+.channel-label>span{
+  font-family:var(--font-ui)!important;
+  color:#858e9a!important;
+  font-weight:500;
+  letter-spacing:0!important;
+}
+
+/* Navigation: readable, calm, less generic SaaS. */
+.nav-item,.sidebar-public-link{
+  font-family:var(--font-ui)!important;
+  font-weight:650!important;
+  letter-spacing:-.015em;
+}
+.nav-item .nav-label{font-size:.9rem}
+.nav-item>span:first-child{
+  font-family:var(--font-mono)!important;
+  font-weight:600;
+}
+
+/* Button language becomes compact and tactile. */
+.channel-btn,.console-button,.air-button,.air-review,.queue-action,.request-action,
+.control-button,.ghost-button,.go-live-button,.mute-button,.queue-button,
+.library-tab,.filter-chip,.selection-actions button{
+  font-family:var(--font-ui)!important;
+  font-weight:700!important;
+  letter-spacing:-.005em!important;
+}
+.channel-btn{
+  font-size:.66rem!important;
+  text-transform:uppercase;
+  letter-spacing:.045em!important;
+}
+.air-button b{font-family:var(--font-display)!important;font-weight:700!important;letter-spacing:.035em!important}
+.air-button small{font-family:var(--font-ui)!important;letter-spacing:0!important}
+
+/* Readable supporting copy with a consistent rhythm. */
+p,small,.muted,.section-subtitle,
+.request-row p,.request-row small,
+.deck-copy small,.incoming-copy small,
+.monitor-readout small,.air-status strong,
+.station-health small,.sidebar-bottom-note{
+  font-family:var(--font-ui)!important;
+  letter-spacing:-.005em;
+}
+.station-health strong{
+  font-family:var(--font-display)!important;
+  font-weight:650;
+  letter-spacing:-.025em;
+}
+
+/* Table and library hierarchy. */
+.library-table-head{
+  font-family:var(--font-mono)!important;
+  letter-spacing:.1em!important;
+  font-weight:600!important;
+}
+.track-cell b,.playlist-info h3,.dj-card h3{
+  font-family:var(--font-display)!important;
+  font-weight:650!important;
+  letter-spacing:-.025em;
+}
+.playlist-pill{font-family:var(--font-ui)!important;font-weight:600}
+
+/* Dialogs feel like control-room prompts rather than web forms. */
+.confirm-summary span,.studio-dialog label{
+  font-family:var(--font-mono)!important;
+  font-size:.63rem;
+  font-weight:600;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.confirm-summary strong{font-size:.78rem;letter-spacing:-.02em}
+
+/* Slightly stronger hierarchy on wide Studio screens. */
+@media(min-width:1100px){
+  .studio-header h1{font-size:1.82rem!important}
+  .mixer-header h3{font-size:1.32rem!important}
+  .channel-label b,.channel-title-row>b{font-size:.87rem!important}
+}
+
+/* Preserve compact readability in the icon rail and mobile view. */
+@media(max-width:900px){
+  .studio-header h1{font-size:1.45rem!important}
+  .eyebrow{font-size:.59rem!important}
+  .channel-label b,.channel-title-row>b{font-size:.76rem!important}
+  .channel-strip>output{font-size:.67rem!important}
+}
