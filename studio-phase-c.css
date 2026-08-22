@@ -1,0 +1,210 @@
+/* PARAÍSO Studio — Phase C: Atmosphere
+   Subtle motion, light, texture, and sonic energy. No layout or audio behavior changes. */
+:root{
+  --lab-pointer-x:72%;
+  --lab-pointer-y:28%;
+  --lab-motion-opacity:1;
+}
+
+/* Keep the existing black architecture; add an atmospheric layer behind it. */
+body{position:relative;isolation:isolate;overflow-x:hidden}
+.studio-shell{position:relative;z-index:1}
+
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  opacity:.34;
+  background-image:
+    radial-gradient(circle at var(--lab-pointer-x) var(--lab-pointer-y),rgba(92,118,255,.055),transparent 20rem),
+    radial-gradient(circle at 18% 82%,rgba(163,87,255,.027),transparent 26rem),
+    radial-gradient(circle at 88% 72%,rgba(59,218,157,.022),transparent 24rem),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.007) 0 1px,transparent 1px 4px);
+  mix-blend-mode:screen;
+}
+
+/* Slow, almost imperceptible aurora behind the working area. */
+.workspace{position:relative;isolation:isolate}
+.workspace::before,
+.workspace::after{
+  content:"";
+  position:fixed;
+  width:52vw;
+  height:52vw;
+  min-width:560px;
+  min-height:560px;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:-1;
+  filter:blur(85px);
+  opacity:.13;
+  will-change:transform;
+}
+.workspace::before{
+  top:-30vw;
+  right:-12vw;
+  background:radial-gradient(circle,rgba(74,102,255,.48) 0%,rgba(96,70,220,.16) 38%,transparent 72%);
+  animation:labAuroraA 22s ease-in-out infinite alternate;
+}
+.workspace::after{
+  left:18vw;
+  bottom:-36vw;
+  background:radial-gradient(circle,rgba(159,72,242,.28) 0%,rgba(33,185,147,.10) 40%,transparent 72%);
+  animation:labAuroraB 28s ease-in-out infinite alternate;
+}
+@keyframes labAuroraA{
+  0%{transform:translate3d(0,0,0) scale(1)}
+  50%{transform:translate3d(-5vw,7vh,0) scale(1.08)}
+  100%{transform:translate3d(3vw,13vh,0) scale(.96)}
+}
+@keyframes labAuroraB{
+  0%{transform:translate3d(0,0,0) scale(.94)}
+  50%{transform:translate3d(6vw,-7vh,0) scale(1.06)}
+  100%{transform:translate3d(-4vw,-12vh,0) scale(1)}
+}
+
+/* Main console catches a faint pool of light, like hardware under studio lighting. */
+.broadcast-console{position:relative;isolation:isolate;overflow:hidden}
+.broadcast-console::before{
+  content:"";
+  position:absolute;
+  inset:-35% -18% auto;
+  height:52%;
+  pointer-events:none;
+  z-index:-1;
+  background:
+    radial-gradient(ellipse at 38% 30%,rgba(73,117,255,.10),transparent 38%),
+    radial-gradient(ellipse at 68% 12%,rgba(161,91,244,.065),transparent 36%);
+  filter:blur(30px);
+  opacity:.65;
+  animation:consoleBreath 10s ease-in-out infinite alternate;
+}
+@keyframes consoleBreath{
+  from{transform:translateY(-3%) scale(1);opacity:.48}
+  to{transform:translateY(6%) scale(1.05);opacity:.74}
+}
+
+/* Tiny optical sheen on elevated equipment. */
+.console-topbar,.setup-ribbon,.mixer-surface,.console-dock,.air-bar,.metric-card,.panel{
+  position:relative;
+}
+.console-topbar::after,.mixer-surface::after,.console-dock::after,.metric-card::after{
+  content:"";
+  position:absolute;
+  left:8%;right:8%;top:0;
+  height:1px;
+  pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.055),transparent);
+  opacity:.65;
+}
+
+/* Mixer well gets a quiet sonic-field shimmer, never over the controls. */
+.mixer-surface{isolation:isolate;overflow:hidden}
+.mixer-surface::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  opacity:.22;
+  background:
+    radial-gradient(circle at 10% 18%,rgba(63,140,255,.12),transparent 23%),
+    radial-gradient(circle at 35% 22%,rgba(241,162,58,.07),transparent 20%),
+    radial-gradient(circle at 55% 20%,rgba(165,106,244,.075),transparent 20%),
+    radial-gradient(circle at 75% 20%,rgba(223,95,133,.06),transparent 20%),
+    radial-gradient(circle at 94% 18%,rgba(88,223,145,.08),transparent 23%);
+}
+
+/* Channel energy becomes more visible only when the channel is interacted with. */
+.channel-strip{
+  transition:transform .18s ease,opacity .16s ease,filter .16s ease,box-shadow .2s ease!important;
+}
+.channel-strip:hover{
+  transform:translateY(-1px);
+  filter:brightness(1.025);
+}
+.channel-strip[data-channel="mic"]:hover{box-shadow:0 18px 38px rgba(0,0,0,.42),0 0 30px rgba(63,140,255,.075),inset 0 1px 0 rgba(63,140,255,.14)!important}
+.channel-strip[data-channel="music"]:hover{box-shadow:0 18px 38px rgba(0,0,0,.42),0 0 30px rgba(241,162,58,.065),inset 0 1px 0 rgba(241,162,58,.13)!important}
+.channel-strip[data-channel="carts"]:hover{box-shadow:0 18px 38px rgba(0,0,0,.42),0 0 30px rgba(165,106,244,.07),inset 0 1px 0 rgba(165,106,244,.13)!important}
+.channel-strip[data-channel="requests"]:hover{box-shadow:0 18px 38px rgba(0,0,0,.42),0 0 30px rgba(223,95,133,.06),inset 0 1px 0 rgba(223,95,133,.13)!important}
+.channel-strip[data-channel="master"]:hover{box-shadow:0 18px 38px rgba(0,0,0,.42),0 0 30px rgba(88,223,145,.07),inset 0 1px 0 rgba(88,223,145,.13)!important}
+
+/* A cued strip emits a low cool halo rather than another visible border. */
+.channel-strip.is-cued{
+  animation:cueHalo 3.6s ease-in-out infinite!important;
+}
+@keyframes cueHalo{
+  0%,100%{filter:brightness(1);}
+  50%{filter:brightness(1.045);}
+}
+.channel-strip.is-cued .channel-btn.cue::after{
+  content:"";
+  position:absolute;
+  inset:22% 18%;
+  border-radius:999px;
+  background:rgba(94,170,228,.24);
+  filter:blur(10px);
+  z-index:-1;
+  animation:cueLamp 2.2s ease-in-out infinite alternate;
+}
+@keyframes cueLamp{from{opacity:.25;transform:scale(.82)}to{opacity:.7;transform:scale(1.08)}}
+
+/* Live signal illumination — more life only when it matters. */
+.console-status-light.live,.health-dot,.air-status.live>i,.air-button-dot{
+  animation:signalGlow 2.4s ease-in-out infinite;
+}
+@keyframes signalGlow{
+  0%,100%{filter:brightness(.95)}
+  50%{filter:brightness(1.22)}
+}
+body.live-broadcasting .broadcast-console::before{
+  background:
+    radial-gradient(ellipse at 32% 24%,rgba(65,231,142,.10),transparent 34%),
+    radial-gradient(ellipse at 70% 6%,rgba(85,117,255,.075),transparent 38%);
+  opacity:.85;
+}
+body.live-broadcasting .air-bar{
+  box-shadow:0 20px 48px rgba(0,0,0,.46),0 0 34px rgba(88,223,145,.05),inset 0 1px 0 rgba(255,255,255,.045)!important;
+}
+
+/* Meter light softly spills into its well. */
+.channel-meter i.lit,.channel-meter i.hot,.channel-meter i.peak{position:relative}
+.channel-meter:has(i.lit){box-shadow:inset 0 0 24px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.022),0 0 18px rgba(72,217,134,.025)!important}
+
+/* Buttons get a quick light response without looking game-like. */
+.channel-btn,.console-button,.air-button,.go-live-button,.control-button,.ghost-button{
+  transition:transform .14s ease,box-shadow .18s ease,background .18s ease,filter .18s ease!important;
+}
+.channel-btn:hover,.console-button:hover,.air-button:hover,.go-live-button:hover,.control-button:hover,.ghost-button:hover{
+  filter:brightness(1.055);
+}
+
+/* Slight vignette focuses attention toward the console. */
+.studio-main{position:relative}
+.studio-main::after{
+  content:"";
+  position:fixed;
+  inset:96px 0 0 0;
+  pointer-events:none;
+  z-index:20;
+  box-shadow:inset 0 0 110px rgba(0,0,0,.20);
+}
+
+@media(max-width:900px){
+  body::after{opacity:.22}
+  .workspace::before,.workspace::after{opacity:.08;filter:blur(70px)}
+  .broadcast-console::before{opacity:.42}
+  .channel-strip:hover{transform:none}
+  .studio-main::after{box-shadow:inset 0 0 70px rgba(0,0,0,.16)}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .workspace::before,.workspace::after,.broadcast-console::before,
+  .channel-strip.is-cued,.channel-strip.is-cued .channel-btn.cue::after,
+  .console-status-light.live,.health-dot,.air-status.live>i,.air-button-dot{
+    animation:none!important;
+  }
+  .channel-strip:hover{transform:none}
+}
