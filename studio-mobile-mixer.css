@@ -1,141 +1,181 @@
 /* PARAÍSO Studio — phone mixer mode
-   Desktop remains untouched. Phones use horizontal equalizer-style channel lanes. */
+   Desktop/tablet remain untouched. Phones use one compact five-channel vertical EQ deck. */
 
 @media(max-width:700px){
-  /* Give the console as much horizontal room as possible beside the icon rail. */
-  .studio-shell{grid-template-columns:56px minmax(0,1fr)!important}
-  .sidebar{padding:10px 6px!important}
-  .brand-mark{width:36px!important;height:36px!important;flex:0 0 36px!important;border-radius:10px!important}
-  .sidebar-controls{margin-top:10px!important}
-  .sidebar-collapse-button{width:36px!important;height:32px!important}
-  .studio-nav{gap:5px!important;margin-top:12px!important}
-  .nav-item{min-height:42px!important;padding:9px 0!important}
-  .nav-item>span:first-child{width:24px!important;min-width:24px!important;font-size:.9rem!important}
-  .sidebar-public-link{width:36px!important;height:36px!important}
+  /* Give the console maximum usable width beside the icon rail. */
+  .studio-shell{grid-template-columns:54px minmax(0,1fr)!important}
+  .sidebar{padding:9px 5px!important}
+  .brand-mark{width:35px!important;height:35px!important;flex:0 0 35px!important;border-radius:10px!important}
+  .sidebar-controls{margin-top:9px!important}
+  .sidebar-collapse-button{width:35px!important;height:31px!important}
+  .studio-nav{gap:4px!important;margin-top:11px!important}
+  .nav-item{min-height:40px!important;padding:8px 0!important}
+  .nav-item>span:first-child{width:23px!important;min-width:23px!important;font-size:.86rem!important}
+  .sidebar-public-link{width:35px!important;height:35px!important}
 
   .workspace,.studio-main,.view,#view-live,.broadcast-console,.mixer-surface,.channel-bank{
     min-width:0!important;
     max-width:100%!important;
   }
-  .studio-header{height:76px!important;padding:11px 10px!important;gap:9px!important}
-  .studio-header h1{font-size:1.24rem!important}
-  .studio-header .eyebrow{font-size:.5rem!important}
-  .header-right{gap:8px!important}
+  .studio-header{height:72px!important;padding:10px 9px!important;gap:8px!important}
+  .studio-header h1{font-size:1.18rem!important}
+  .studio-header .eyebrow{font-size:.48rem!important}
+  .header-right{gap:7px!important}
   .station-health>div{display:none!important}
-  .profile-button{width:34px!important;height:34px!important}
-  .studio-main{padding:9px 7px 18px!important;overflow-x:hidden!important}
+  .profile-button{width:32px!important;height:32px!important}
+  .studio-main{padding:7px 5px 16px!important;overflow-x:hidden!important}
 
-  /* Console shell reflows vertically without any horizontal page scrolling. */
+  /* Console shell reflows without horizontal page scrolling. */
   .broadcast-console{
     width:100%!important;
-    padding:7px!important;
-    gap:8px!important;
-    margin-bottom:14px!important;
-    border-radius:16px!important;
+    padding:6px!important;
+    gap:7px!important;
+    margin-bottom:12px!important;
+    border-radius:15px!important;
     overflow:hidden!important;
   }
-  .console-topbar{min-height:58px!important;padding:10px!important;gap:8px!important;border-radius:13px!important}
-  .console-identity{gap:8px!important;min-width:0!important}
-  .console-identity h2{font-size:1rem!important}
-  .console-ready-pill{padding:6px 8px!important;font-size:.52rem!important;letter-spacing:.06em!important;white-space:nowrap!important}
+  .console-topbar{min-height:56px!important;padding:9px!important;gap:7px!important;border-radius:12px!important}
+  .console-identity{gap:7px!important;min-width:0!important}
+  .console-identity h2{font-size:.96rem!important}
+  .console-ready-pill{padding:5px 7px!important;font-size:.49rem!important;letter-spacing:.05em!important;white-space:nowrap!important}
 
   .setup-ribbon{
     grid-template-columns:minmax(0,1fr)!important;
-    gap:7px!important;
-    padding:8px!important;
-    border-radius:13px!important;
+    gap:6px!important;
+    padding:7px!important;
+    border-radius:12px!important;
   }
   .ribbon-field{min-width:0!important;gap:4px!important}
-  .ribbon-field>span{font-size:.52rem!important}
-  .ribbon-field select{width:100%!important;max-width:100%!important;min-width:0!important;padding:9px 10px!important;font-size:16px!important}
-  .ribbon-health{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:4px!important;width:100%!important}
-  .health-check,.health-icon-tile{min-width:0!important;padding:5px 2px!important;border-radius:9px!important;justify-items:center!important}
-  .health-icon{width:31px!important;height:31px!important}
-  .health-speed{font-size:.45rem!important}
+  .ribbon-field>span{font-size:.5rem!important}
+  .ribbon-field select{width:100%!important;max-width:100%!important;min-width:0!important;padding:8px 9px!important;font-size:16px!important}
+  .ribbon-health{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:3px!important;width:100%!important}
+  .health-check,.health-icon-tile{min-width:0!important;padding:4px 1px!important;border-radius:8px!important;justify-items:center!important}
+  .health-icon{width:29px!important;height:29px!important}
+  .health-speed{font-size:.42rem!important}
 
-  .mixer-surface{padding:8px 6px!important;border-radius:14px!important;overflow:hidden!important}
-  .mixer-header{display:grid!important;grid-template-columns:1fr!important;gap:7px!important;margin-bottom:8px!important}
-  .mixer-header h3{font-size:1rem!important}
+  .mixer-surface{padding:7px 4px!important;border-radius:13px!important;overflow:hidden!important}
+  .mixer-header{display:grid!important;grid-template-columns:1fr!important;gap:6px!important;margin-bottom:7px!important}
+  .mixer-header h3{font-size:.96rem!important}
   .cue-tools{display:block!important;width:100%!important}
-  .cue-volume-control{grid-template-columns:auto minmax(0,1fr) 38px!important;width:100%!important;padding:6px 7px!important;gap:6px!important}
+  .cue-volume-control{grid-template-columns:auto minmax(0,1fr) 36px!important;width:100%!important;padding:5px 6px!important;gap:5px!important}
   .cue-volume-control input{width:100%!important;min-width:0!important}
   .cue-help{display:none!important}
 
-  /* The channel bank becomes five horizontal EQ lanes stacked vertically. */
+  /* One shared five-lane EQ deck — all channels stay vertical and visible together. */
   .channel-bank{
     display:grid!important;
-    grid-template-columns:minmax(0,1fr)!important;
-    gap:4px!important;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    gap:0!important;
     width:100%!important;
-    padding:4px!important;
-    border-radius:12px!important;
+    min-width:0!important;
+    padding:5px 3px!important;
+    border-radius:11px!important;
     overflow:hidden!important;
+    background:
+      radial-gradient(24rem 11rem at 50% -15%,rgba(91,109,218,.065),transparent 64%),
+      linear-gradient(180deg,#05080b,#020405)!important;
+    box-shadow:inset 0 12px 25px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.018)!important;
   }
+
   .channel-strip{
     position:relative!important;
     width:100%!important;
     min-width:0!important;
-    min-height:96px!important;
-    height:auto!important;
-    padding:8px 7px!important;
-    padding-bottom:8px!important;
+    min-height:258px!important;
+    height:258px!important;
+    padding:7px 3px 5px!important;
+    padding-bottom:5px!important;
     display:grid!important;
-    grid-template-columns:64px minmax(0,1fr) 50px!important;
-    grid-template-rows:auto 28px 18px!important;
+    grid-template-columns:14px minmax(0,1fr)!important;
+    grid-template-rows:30px 126px 16px 66px!important;
     grid-template-areas:
-      "label label buttons"
-      "meter fader buttons"
-      "value value buttons"!important;
-    column-gap:7px!important;
-    row-gap:4px!important;
-    border-radius:8px!important;
+      "label label"
+      "meter fader"
+      "value value"
+      "buttons buttons"!important;
+    column-gap:2px!important;
+    row-gap:3px!important;
+    border:0!important;
+    border-radius:0!important;
     overflow:hidden!important;
+    background:transparent!important;
+    box-shadow:inset -1px 0 rgba(255,255,255,.035)!important;
+  }
+  .channel-strip:last-child{box-shadow:none!important}
+
+  /* Keep the five channel colors as a tiny illuminated EQ trace. */
+  .channel-strip::before{
+    left:18%!important;
+    right:18%!important;
+    top:0!important;
+    height:2px!important;
+    border-radius:999px!important;
   }
 
-  /* Mobile channel identity is deliberately minimal. */
-  .channel-label{grid-area:label!important;padding:0!important;min-width:0!important;align-self:center!important}
-  .channel-title-row{display:block!important;min-width:0!important}
-  .channel-title-row>b,.channel-label b{font-size:.66rem!important;letter-spacing:.06em!important;white-space:nowrap!important}
+  /* Compact channel identity — no subtitles/status pills inside the narrow lanes. */
+  .channel-label{
+    grid-area:label!important;
+    padding:3px 0 0!important;
+    min-width:0!important;
+    text-align:center!important;
+    align-self:start!important;
+  }
+  .channel-title-row{display:block!important;min-width:0!important;text-align:center!important}
+  .channel-title-row>b,.channel-label b{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    font-size:.52rem!important;
+    line-height:1.08!important;
+    letter-spacing:.015em!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:clip!important;
+    text-align:center!important;
+  }
   .channel-label>span,.channel-source-badge,.real-meter-badge,.channel-program-state{display:none!important}
 
-  /* LED meter turns sideways like a compact equalizer / level bar. */
+  /* Vertical LED level meter — narrow like the side meter on a hardware EQ. */
   .channel-meter{
     grid-area:meter!important;
     display:flex!important;
-    flex-direction:row!important;
+    flex-direction:column-reverse!important;
     align-items:stretch!important;
     justify-content:flex-start!important;
-    width:100%!important;
-    height:18px!important;
-    min-height:18px!important;
+    align-self:stretch!important;
+    justify-self:stretch!important;
+    width:12px!important;
+    height:118px!important;
+    min-height:118px!important;
+    margin:auto 0!important;
     padding:2px!important;
     gap:1px!important;
-    border-radius:5px!important;
+    border-radius:4px!important;
   }
   .channel-meter i{
     flex:1 1 0!important;
-    width:auto!important;
-    min-width:1px!important;
-    min-height:0!important;
+    width:100%!important;
+    min-width:0!important;
+    min-height:2px!important;
     height:auto!important;
     border-radius:1px!important;
   }
   .channel-db{display:none!important}
 
-  /* Desktop vertical fader becomes a normal horizontal phone slider. */
+  /* Vertical fader remains vertical, but is shortened to fit the shared EQ bank. */
   .channel-fader{
     grid-area:fader!important;
-    transform:none!important;
+    transform:rotate(-90deg)!important;
     transform-origin:center!important;
-    justify-self:stretch!important;
+    justify-self:center!important;
     align-self:center!important;
-    width:100%!important;
-    min-width:0!important;
-    height:28px!important;
+    width:116px!important;
+    min-width:116px!important;
+    height:24px!important;
     margin:0!important;
   }
 
-  /* Undo the desktop absolute level positioning and keep it inside the lane. */
+  /* Level value stays centered directly under its vertical control. */
   .channel-strip>output{
     position:static!important;
     grid-area:value!important;
@@ -150,12 +190,12 @@
     padding:0!important;
     text-align:center!important;
     align-self:center!important;
-    font-size:.58rem!important;
+    font-size:.48rem!important;
     line-height:1!important;
     overflow:visible!important;
   }
 
-  /* MUTE above headphone CUE — one compact control column. */
+  /* MUTE above headphone CUE in every narrow EQ lane. */
   .channel-buttons{
     position:static!important;
     grid-area:buttons!important;
@@ -165,38 +205,41 @@
     display:flex!important;
     flex-direction:column!important;
     align-items:stretch!important;
-    justify-content:center!important;
-    gap:5px!important;
+    justify-content:end!important;
+    gap:3px!important;
     width:100%!important;
     min-width:0!important;
     max-width:100%!important;
     margin:0!important;
+    padding:0 1px!important;
     overflow:visible!important;
   }
   .channel-btn{
-    flex:0 0 36px!important;
+    flex:0 0 30px!important;
     width:100%!important;
     min-width:0!important;
     max-width:100%!important;
-    min-height:36px!important;
-    height:36px!important;
-    padding:4px 2px!important;
-    border-radius:7px!important;
-    font-size:.48rem!important;
-    letter-spacing:.02em!important;
+    min-height:30px!important;
+    height:30px!important;
+    margin:0!important;
+    padding:2px 1px!important;
+    border-radius:5px!important;
+    font-size:.4rem!important;
+    letter-spacing:0!important;
+    line-height:1!important;
   }
   .channel-btn.mute{order:1!important}
-  .channel-btn.cue{order:2!important;min-height:36px!important}
-  .channel-btn.cue::before{font-size:.9rem!important}
+  .channel-btn.cue{order:2!important;min-height:30px!important}
+  .channel-btn.cue::before{font-size:.76rem!important;transform:none!important}
 
-  /* Readouts and lower console content stack cleanly beneath the EQ lanes. */
+  /* Readouts and lower console content stack beneath the shared EQ deck. */
   .monitor-readout{grid-template-columns:minmax(0,1fr)!important;gap:3px!important;margin-top:6px!important;padding:3px!important}
   .monitor-readout>div{padding:8px 9px!important}
-  .monitor-readout strong{font-size:.82rem!important}
-  .monitor-readout small{font-size:.52rem!important;white-space:normal!important;line-height:1.3!important}
-  .console-lower-grid{grid-template-columns:minmax(0,1fr)!important;gap:7px!important}
-  .console-dock{padding:10px!important;border-radius:12px!important}
-  .deck-row,.incoming-row{gap:7px!important}
+  .monitor-readout strong{font-size:.8rem!important}
+  .monitor-readout small{font-size:.5rem!important;white-space:normal!important;line-height:1.3!important}
+  .console-lower-grid{grid-template-columns:minmax(0,1fr)!important;gap:6px!important}
+  .console-dock{padding:9px!important;border-radius:11px!important}
+  .deck-row,.incoming-row{gap:6px!important}
   .deck-copy,.incoming-copy{min-width:0!important}
   .deck-copy strong,.deck-copy small,.incoming-copy strong,.incoming-copy small{overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
 
@@ -204,34 +247,43 @@
     position:static!important;
     display:grid!important;
     grid-template-columns:minmax(0,1fr)!important;
-    gap:8px!important;
-    padding:9px!important;
-    border-radius:13px!important;
+    gap:7px!important;
+    padding:8px!important;
+    border-radius:12px!important;
   }
   .air-status{min-width:0!important}
-  .air-status strong{font-size:.62rem!important}
-  .air-actions{display:grid!important;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)!important;width:100%!important;gap:6px!important}
+  .air-status strong{font-size:.6rem!important}
+  .air-actions{display:grid!important;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)!important;width:100%!important;gap:5px!important}
   .air-review,.air-button{width:100%!important;min-width:0!important}
-  .air-button{padding:8px 9px!important}
-  .air-button b{font-size:.62rem!important}
-  .air-button small{font-size:.5rem!important}
+  .air-button{padding:7px 8px!important}
+  .air-button b{font-size:.6rem!important}
+  .air-button small{font-size:.48rem!important}
 }
 
-/* Extra-narrow phones: preserve the EQ concept at 320 CSS px without overflow. */
+/* Extra-narrow phones: preserve the five-lane EQ board down to ~320 CSS px. */
 @media(max-width:380px){
-  .studio-shell{grid-template-columns:52px minmax(0,1fr)!important}
-  .sidebar{padding-left:5px!important;padding-right:5px!important}
-  .brand-mark,.sidebar-collapse-button,.sidebar-public-link{width:34px!important}
-  .brand-mark{height:34px!important;flex-basis:34px!important}
-  .studio-main{padding-left:5px!important;padding-right:5px!important}
-  .broadcast-console{padding:5px!important}
-  .mixer-surface{padding-left:4px!important;padding-right:4px!important}
+  .studio-shell{grid-template-columns:48px minmax(0,1fr)!important}
+  .sidebar{padding-left:4px!important;padding-right:4px!important}
+  .brand-mark,.sidebar-collapse-button,.sidebar-public-link{width:32px!important}
+  .brand-mark{height:32px!important;flex-basis:32px!important}
+  .studio-main{padding-left:4px!important;padding-right:4px!important}
+  .broadcast-console{padding:4px!important}
+  .mixer-surface{padding-left:3px!important;padding-right:3px!important}
+  .channel-bank{padding-left:2px!important;padding-right:2px!important}
   .channel-strip{
-    grid-template-columns:56px minmax(0,1fr) 46px!important;
-    column-gap:5px!important;
-    padding-left:5px!important;
-    padding-right:5px!important;
+    min-height:244px!important;
+    height:244px!important;
+    grid-template-columns:12px minmax(0,1fr)!important;
+    grid-template-rows:28px 118px 15px 62px!important;
+    padding-left:2px!important;
+    padding-right:2px!important;
+    column-gap:1px!important;
   }
-  .channel-title-row>b,.channel-label b{font-size:.61rem!important}
-  .channel-btn{font-size:.44rem!important}
+  .channel-meter{width:10px!important;height:110px!important;min-height:110px!important;padding:1px!important}
+  .channel-fader{width:108px!important;min-width:108px!important;height:22px!important}
+  .channel-title-row>b,.channel-label b{font-size:.46rem!important;letter-spacing:0!important}
+  .channel-strip>output{font-size:.44rem!important}
+  .channel-btn{height:28px!important;min-height:28px!important;flex-basis:28px!important;font-size:.36rem!important}
+  .channel-btn.cue{min-height:28px!important}
+  .channel-btn.cue::before{font-size:.7rem!important}
 }
