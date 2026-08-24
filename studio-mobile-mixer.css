@@ -1,0 +1,237 @@
+/* PARAÍSO Studio — phone mixer mode
+   Desktop remains untouched. Phones use horizontal equalizer-style channel lanes. */
+
+@media(max-width:700px){
+  /* Give the console as much horizontal room as possible beside the icon rail. */
+  .studio-shell{grid-template-columns:56px minmax(0,1fr)!important}
+  .sidebar{padding:10px 6px!important}
+  .brand-mark{width:36px!important;height:36px!important;flex:0 0 36px!important;border-radius:10px!important}
+  .sidebar-controls{margin-top:10px!important}
+  .sidebar-collapse-button{width:36px!important;height:32px!important}
+  .studio-nav{gap:5px!important;margin-top:12px!important}
+  .nav-item{min-height:42px!important;padding:9px 0!important}
+  .nav-item>span:first-child{width:24px!important;min-width:24px!important;font-size:.9rem!important}
+  .sidebar-public-link{width:36px!important;height:36px!important}
+
+  .workspace,.studio-main,.view,#view-live,.broadcast-console,.mixer-surface,.channel-bank{
+    min-width:0!important;
+    max-width:100%!important;
+  }
+  .studio-header{height:76px!important;padding:11px 10px!important;gap:9px!important}
+  .studio-header h1{font-size:1.24rem!important}
+  .studio-header .eyebrow{font-size:.5rem!important}
+  .header-right{gap:8px!important}
+  .station-health>div{display:none!important}
+  .profile-button{width:34px!important;height:34px!important}
+  .studio-main{padding:9px 7px 18px!important;overflow-x:hidden!important}
+
+  /* Console shell reflows vertically without any horizontal page scrolling. */
+  .broadcast-console{
+    width:100%!important;
+    padding:7px!important;
+    gap:8px!important;
+    margin-bottom:14px!important;
+    border-radius:16px!important;
+    overflow:hidden!important;
+  }
+  .console-topbar{min-height:58px!important;padding:10px!important;gap:8px!important;border-radius:13px!important}
+  .console-identity{gap:8px!important;min-width:0!important}
+  .console-identity h2{font-size:1rem!important}
+  .console-ready-pill{padding:6px 8px!important;font-size:.52rem!important;letter-spacing:.06em!important;white-space:nowrap!important}
+
+  .setup-ribbon{
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:7px!important;
+    padding:8px!important;
+    border-radius:13px!important;
+  }
+  .ribbon-field{min-width:0!important;gap:4px!important}
+  .ribbon-field>span{font-size:.52rem!important}
+  .ribbon-field select{width:100%!important;max-width:100%!important;min-width:0!important;padding:9px 10px!important;font-size:16px!important}
+  .ribbon-health{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:4px!important;width:100%!important}
+  .health-check,.health-icon-tile{min-width:0!important;padding:5px 2px!important;border-radius:9px!important;justify-items:center!important}
+  .health-icon{width:31px!important;height:31px!important}
+  .health-speed{font-size:.45rem!important}
+
+  .mixer-surface{padding:8px 6px!important;border-radius:14px!important;overflow:hidden!important}
+  .mixer-header{display:grid!important;grid-template-columns:1fr!important;gap:7px!important;margin-bottom:8px!important}
+  .mixer-header h3{font-size:1rem!important}
+  .cue-tools{display:block!important;width:100%!important}
+  .cue-volume-control{grid-template-columns:auto minmax(0,1fr) 38px!important;width:100%!important;padding:6px 7px!important;gap:6px!important}
+  .cue-volume-control input{width:100%!important;min-width:0!important}
+  .cue-help{display:none!important}
+
+  /* The channel bank becomes five horizontal EQ lanes stacked vertically. */
+  .channel-bank{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:4px!important;
+    width:100%!important;
+    padding:4px!important;
+    border-radius:12px!important;
+    overflow:hidden!important;
+  }
+  .channel-strip{
+    position:relative!important;
+    width:100%!important;
+    min-width:0!important;
+    min-height:96px!important;
+    height:auto!important;
+    padding:8px 7px!important;
+    padding-bottom:8px!important;
+    display:grid!important;
+    grid-template-columns:64px minmax(0,1fr) 50px!important;
+    grid-template-rows:auto 28px 18px!important;
+    grid-template-areas:
+      "label label buttons"
+      "meter fader buttons"
+      "value value buttons"!important;
+    column-gap:7px!important;
+    row-gap:4px!important;
+    border-radius:8px!important;
+    overflow:hidden!important;
+  }
+
+  /* Mobile channel identity is deliberately minimal. */
+  .channel-label{grid-area:label!important;padding:0!important;min-width:0!important;align-self:center!important}
+  .channel-title-row{display:block!important;min-width:0!important}
+  .channel-title-row>b,.channel-label b{font-size:.66rem!important;letter-spacing:.06em!important;white-space:nowrap!important}
+  .channel-label>span,.channel-source-badge,.real-meter-badge,.channel-program-state{display:none!important}
+
+  /* LED meter turns sideways like a compact equalizer / level bar. */
+  .channel-meter{
+    grid-area:meter!important;
+    display:flex!important;
+    flex-direction:row!important;
+    align-items:stretch!important;
+    justify-content:flex-start!important;
+    width:100%!important;
+    height:18px!important;
+    min-height:18px!important;
+    padding:2px!important;
+    gap:1px!important;
+    border-radius:5px!important;
+  }
+  .channel-meter i{
+    flex:1 1 0!important;
+    width:auto!important;
+    min-width:1px!important;
+    min-height:0!important;
+    height:auto!important;
+    border-radius:1px!important;
+  }
+  .channel-db{display:none!important}
+
+  /* Desktop vertical fader becomes a normal horizontal phone slider. */
+  .channel-fader{
+    grid-area:fader!important;
+    transform:none!important;
+    transform-origin:center!important;
+    justify-self:stretch!important;
+    align-self:center!important;
+    width:100%!important;
+    min-width:0!important;
+    height:28px!important;
+    margin:0!important;
+  }
+
+  /* Undo the desktop absolute level positioning and keep it inside the lane. */
+  .channel-strip>output{
+    position:static!important;
+    grid-area:value!important;
+    left:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:0!important;
+    text-align:center!important;
+    align-self:center!important;
+    font-size:.58rem!important;
+    line-height:1!important;
+    overflow:visible!important;
+  }
+
+  /* MUTE above headphone CUE — one compact control column. */
+  .channel-buttons{
+    position:static!important;
+    grid-area:buttons!important;
+    left:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    justify-content:center!important;
+    gap:5px!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    margin:0!important;
+    overflow:visible!important;
+  }
+  .channel-btn{
+    flex:0 0 36px!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    min-height:36px!important;
+    height:36px!important;
+    padding:4px 2px!important;
+    border-radius:7px!important;
+    font-size:.48rem!important;
+    letter-spacing:.02em!important;
+  }
+  .channel-btn.mute{order:1!important}
+  .channel-btn.cue{order:2!important;min-height:36px!important}
+  .channel-btn.cue::before{font-size:.9rem!important}
+
+  /* Readouts and lower console content stack cleanly beneath the EQ lanes. */
+  .monitor-readout{grid-template-columns:minmax(0,1fr)!important;gap:3px!important;margin-top:6px!important;padding:3px!important}
+  .monitor-readout>div{padding:8px 9px!important}
+  .monitor-readout strong{font-size:.82rem!important}
+  .monitor-readout small{font-size:.52rem!important;white-space:normal!important;line-height:1.3!important}
+  .console-lower-grid{grid-template-columns:minmax(0,1fr)!important;gap:7px!important}
+  .console-dock{padding:10px!important;border-radius:12px!important}
+  .deck-row,.incoming-row{gap:7px!important}
+  .deck-copy,.incoming-copy{min-width:0!important}
+  .deck-copy strong,.deck-copy small,.incoming-copy strong,.incoming-copy small{overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+
+  .air-bar{
+    position:static!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:8px!important;
+    padding:9px!important;
+    border-radius:13px!important;
+  }
+  .air-status{min-width:0!important}
+  .air-status strong{font-size:.62rem!important}
+  .air-actions{display:grid!important;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)!important;width:100%!important;gap:6px!important}
+  .air-review,.air-button{width:100%!important;min-width:0!important}
+  .air-button{padding:8px 9px!important}
+  .air-button b{font-size:.62rem!important}
+  .air-button small{font-size:.5rem!important}
+}
+
+/* Extra-narrow phones: preserve the EQ concept at 320 CSS px without overflow. */
+@media(max-width:380px){
+  .studio-shell{grid-template-columns:52px minmax(0,1fr)!important}
+  .sidebar{padding-left:5px!important;padding-right:5px!important}
+  .brand-mark,.sidebar-collapse-button,.sidebar-public-link{width:34px!important}
+  .brand-mark{height:34px!important;flex-basis:34px!important}
+  .studio-main{padding-left:5px!important;padding-right:5px!important}
+  .broadcast-console{padding:5px!important}
+  .mixer-surface{padding-left:4px!important;padding-right:4px!important}
+  .channel-strip{
+    grid-template-columns:56px minmax(0,1fr) 46px!important;
+    column-gap:5px!important;
+    padding-left:5px!important;
+    padding-right:5px!important;
+  }
+  .channel-title-row>b,.channel-label b{font-size:.61rem!important}
+  .channel-btn{font-size:.44rem!important}
+}
