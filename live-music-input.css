@@ -1,0 +1,33 @@
+/* PARAÍSO Studio — real MUSIC virtual-audio input */
+.setup-ribbon.has-music-input{
+  grid-template-columns:1fr 1fr 1fr 1fr 1.55fr!important;
+}
+.music-input-field{min-width:0}
+.music-input-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:center}
+.music-input-row select{min-width:0}
+.music-input-button{
+  min-height:39px;padding:8px 10px;border:1px solid #4e4031;border-radius:9px;
+  background:linear-gradient(180deg,#2b241c,#1c1813);color:#f3c277;font-size:.63rem;font-weight:800;
+  letter-spacing:.04em;cursor:pointer;white-space:nowrap;box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 2px 0 #070809;
+}
+.music-input-button:hover{filter:brightness(1.06)}
+.music-input-button:disabled{opacity:.48;cursor:wait}
+.music-input-button.connected{border-color:#7b3b42;background:linear-gradient(180deg,#3c1d21,#281317);color:#ffafb5}
+.music-input-status{display:block;min-height:1.2em;margin-top:4px;color:#7c8490;font-size:.56rem;line-height:1.35}
+.music-input-field[data-state="ready"] .music-input-status{color:#c29a62}
+.music-input-field[data-state="connecting"] .music-input-status{color:#8fb5db}
+.music-input-field[data-state="connected"] .music-input-status{color:#74d99b}
+.music-input-field[data-state="error"] .music-input-status{color:#e6a169}
+.music-input-field.connected select{border-color:#66512f!important;box-shadow:0 0 0 3px rgba(241,162,58,.035)!important}
+.channel-strip[data-channel="music"] .channel-source-badge.real{background:#2e2514!important;border-color:#6a5128!important;color:#f3c277!important}
+
+@media(max-width:1100px){
+  .setup-ribbon.has-music-input{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .setup-ribbon.has-music-input .ribbon-health{grid-column:1/-1}
+}
+@media(max-width:700px){
+  .setup-ribbon.has-music-input{grid-template-columns:minmax(0,1fr)!important}
+  .music-input-row{grid-template-columns:minmax(0,1fr) 82px!important;gap:5px}
+  .music-input-button{min-height:38px;padding:7px 6px;font-size:.5rem}
+  .music-input-status{font-size:.48rem}
+}
