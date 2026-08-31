@@ -1,7 +1,8 @@
 (()=>{
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const surface=$('.mixer-surface'),bank=surface?.querySelector('.channel-bank');
-if(!surface||!bank||$('#broadcastScenesPanel'))return;
+const audio=window.PARAISO_LIVE_AUDIO;
+if(!surface||!bank||!audio||$('#broadcastScenesPanel'))return;
 
 const CHANNELS=['mic','music','carts','requests','master'];
 const DEFAULTS={mic:72,music:64,carts:58,requests:52,master:82};
@@ -15,7 +16,7 @@ const SCENES={
 };
 
 let activeScene=null,sceneApplying=false,sceneToken=0;
-let smartEnabled=false,smartDucking=false,lastActivityCheck=0,voiceSince=0,silenceSince=0,noiseFloor=.008;
+let smartEnabled=false,smartDucking=false,lastActivityCheck=0,voiceSince=0,silenceSince=0,noiseFloor=.004;
 let musicDuckGain=null,musicDuckSource=null;
 
 const panel=document.createElement('section');
@@ -42,55 +43,54 @@ panel.innerHTML=`
       <label><span>DUCK DEPTH</span><input id="smartDuckDepth" type="range" min="6" max="18" step="1" value="10"><output id="smartDuckDepthValue">−10 dB</output></label>
       <label><span>RECOVERY</span><input id="smartRecovery" type="range" min="250" max="2500" step="50" value="900"><output id="smartRecoveryValue">0.9 s</output></label>
     </div>
-    <p class="smart-talk-note">Convenience feature only — it temporarily lowers MUSIC while speech is detected, preserves the DJ's base fader position, and never overrides MUTE.</p>
+    <p class="smart-talk-note">Convenience feature only — it temporarily lowers MUSIC while speech is detected, preserves the DJ's base fader position, and never overrides MUTE or an active scene.</p>
   </div>`;
 surface.insertBefore(panel,bank);
 
 const sceneStatus=$('#sceneStatus'),sceneDetail=$('#sceneDetail'),smartToggle=$('#smartTalkToggle'),duckDepth=$('#smartDuckDepth'),recovery=$('#smartRecovery');
-
 function levelEl(id){return $(`#${id}Level`)}
 function muteBtn(id){return $(`[data-channel-mute="${id}"]`)}
 function cueBtn(id){return $(`[data-channel-cue="${id}"]`)}
-function isMuted(id){return muteBtn(id)?.classList.contains('active')||false}
-function isCued(id){return cueBtn(id)?.classList.contains('active')||false}
-function wait(ms){return new Promise(r=>setTimeout(r,ms))}
+function isMuted(id){return audio.getChannelMuted?.(id)??muteBtn(id)?.classList.contains('active')??false}
+function isCued(id){return audio.activeCues?.includes(id)||false}
 function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
 function dbToGain(db){return Math.pow(10,db/20)}
 
-function dispatchLevel(id,value){
+function dispatchLevel(id,value,scene=false){
   const input=levelEl(id);if(!input)return;
   input.value=String(Math.round(clamp(value,0,100)));
+  if(scene)input.dataset.sceneTransition='1';
   input.dispatchEvent(new Event('input',{bubbles:true}));
+  if(scene)delete input.dataset.sceneTransition;
 }
 async function tweenLevel(id,target,duration,token){
   const input=levelEl(id);if(!input)return;
   const from=Number(input.value),to=clamp(Number(target),0,100);
-  if(Math.abs(to-from)<.5){dispatchLevel(id,to);return;}
+  if(Math.abs(to-from)<.5){dispatchLevel(id,to,true);return}
   const start=performance.now();
   await new Promise(resolve=>{
     const tick=now=>{
-      if(token!==sceneToken){resolve();return;}
+      if(token!==sceneToken){resolve();return}
       const p=clamp((now-start)/Math.max(1,duration),0,1),ease=1-Math.pow(1-p,3);
-      dispatchLevel(id,from+(to-from)*ease);
+      dispatchLevel(id,from+(to-from)*ease,true);
       if(p<1)requestAnimationFrame(tick);else resolve();
     };
     requestAnimationFrame(tick);
   });
 }
 function setMute(id,muted){
-  const btn=muteBtn(id);if(!btn||isMuted(id)===muted)return;
-  btn.click();
+  if(isMuted(id)===muted)return;
+  if(audio.setChannelMute)audio.setChannelMute(id,muted);
+  else muteBtn(id)?.click();
 }
 function clearCues(){
-  CHANNELS.forEach(id=>{if(isCued(id))cueBtn(id)?.click()});
+  CHANNELS.forEach(id=>{if(isCued(id)){if(audio.setCue)audio.setCue(id,false);else cueBtn(id)?.click()}});
 }
 function updateSceneVisual(){
-  $$('.scene-button').forEach(btn=>{
-    const on=btn.dataset.scene===activeScene;
-    btn.classList.toggle('active',on);btn.setAttribute('aria-pressed',on?'true':'false');
-  });
+  $$('.scene-button').forEach(btn=>{const on=btn.dataset.scene===activeScene;btn.classList.toggle('active',on);btn.setAttribute('aria-pressed',on?'true':'false')});
   sceneStatus.textContent=activeScene?SCENES[activeScene].label:'CUSTOM';
   sceneDetail.textContent=activeScene?SCENES[activeScene].detail:'Manual board state · scene changes use safe level ramps and clear headphone CUE routes.';
+  updateSmartVisual();
 }
 function markCustom(detail='Manual mixer adjustment detected.'){
   if(sceneApplying)return;
@@ -99,65 +99,57 @@ function markCustom(detail='Manual mixer adjustment detected.'){
 
 async function applyScene(id){
   const scene=SCENES[id];if(!scene)return;
-  const token=++sceneToken;sceneApplying=true;activeScene=id;updateSceneVisual();
-  panel.classList.add('scene-transitioning');
-  sceneStatus.textContent='CHANGING…';
-  releaseSmartDuck(120,true);
-  clearCues();
+  const token=++sceneToken;sceneApplying=true;activeScene=id;updateSceneVisual();panel.classList.add('scene-transitioning');sceneStatus.textContent='CHANGING…';
+  releaseSmartDuck(100,true);clearCues();
 
-  // Any channel being muted is silenced first. Downward moves are always safe.
   CHANNELS.forEach(ch=>{if(scene.mutes[ch])setMute(ch,true)});
-
-  // Channels that will be opened start from zero while still muted, then rise smoothly.
   const opening=CHANNELS.filter(ch=>!scene.mutes[ch]&&isMuted(ch));
-  opening.forEach(ch=>dispatchLevel(ch,0));
+  opening.forEach(ch=>dispatchLevel(ch,0,true));
   opening.forEach(ch=>setMute(ch,false));
 
-  const jobs=CHANNELS.map(ch=>{
+  await Promise.all(CHANNELS.map(ch=>{
     const current=Number(levelEl(ch)?.value||0),target=scene.levels[ch];
-    const duration=target>current?700:220;
-    return tweenLevel(ch,target,duration,token);
-  });
-  await Promise.all(jobs);
+    return tweenLevel(ch,target,target>current?700:220,token);
+  }));
   if(token!==sceneToken)return;
 
   CHANNELS.forEach(ch=>setMute(ch,!!scene.mutes[ch]));
   sceneApplying=false;panel.classList.remove('scene-transitioning');updateSceneVisual();
   if(id==='guest')sceneDetail.textContent='Guest-ready mix loaded. Dedicated guest input will slot into this scene when guest-channel support is added.';
-  if(id==='autodj'&&document.body.classList.contains('live-broadcasting'))sceneDetail.textContent='Local board parked safely. Use END BROADCAST to hand actual program control back to AutoDJ.';
+  if(id==='autodj'&&audio.isLive)sceneDetail.textContent='Local board parked safely. Use END BROADCAST to hand actual program control back to AutoDJ.';
 }
 
 $$('.scene-button').forEach(btn=>btn.addEventListener('click',()=>applyScene(btn.dataset.scene)));
-CHANNELS.forEach(id=>{
-  levelEl(id)?.addEventListener('input',()=>markCustom(`${id.toUpperCase()} fader changed manually.`));
-  muteBtn(id)?.addEventListener('click',()=>setTimeout(()=>markCustom(`${id.toUpperCase()} mute changed manually.`),0));
-  cueBtn(id)?.addEventListener('click',()=>setTimeout(()=>markCustom('Headphone CUE routing changed manually.'),0));
-});
+document.addEventListener('paraiso:channel-level',e=>{if(e.detail?.manual)markCustom(`${String(e.detail.id).toUpperCase()} fader changed manually.`)});
+document.addEventListener('paraiso:channel-mute',e=>markCustom(`${String(e.detail?.id||'Channel').toUpperCase()} mute changed manually.`));
+document.addEventListener('paraiso:channel-cue',()=>markCustom('Headphone CUE routing changed manually.'));
 
-/* Patch future MUSIC attachments with an independent duck gain before the core mixer gain.
-   This preserves the visible/base MUSIC fader position. */
-const audio=window.PARAISO_LIVE_AUDIO;
-if(audio?.attachSource&&audio?.detachSource){
+/* Smart Talk inserts one independent gain before the core MUSIC channel gain.
+   CUE receives the raw source, so it remains pre-fader, pre-mute and pre-duck. */
+if(audio.attachSource&&audio.detachSource){
   const originalAttach=audio.attachSource.bind(audio),originalDetach=audio.detachSource.bind(audio);
-  audio.attachSource=function(id,node){
-    if(id!=='music'||!node||typeof node.connect!=='function'||!audio.context)return originalAttach(id,node);
+  audio.attachSource=function(id,node,options={}){
+    if(id!=='music'||!node||typeof node.connect!=='function')return originalAttach(id,node,options);
     try{
+      const ctx=audio.ensureContext?.()||audio.context;
+      if(!ctx)return originalAttach(id,node,options);
       if(musicDuckSource){try{musicDuckSource.disconnect(musicDuckGain)}catch{};try{musicDuckGain.disconnect()}catch{}}
-      const duck=audio.context.createGain();duck.gain.value=smartDucking?dbToGain(-Number(duckDepth.value)):1;
+      const duck=ctx.createGain();duck.gain.value=smartDucking?dbToGain(-Number(duckDepth.value)):1;
       node.connect(duck);
-      const ok=originalAttach(id,duck);
-      if(!ok){try{node.disconnect(duck)}catch{};try{duck.disconnect()}catch{};return false;}
+      const ok=originalAttach(id,duck,{...options,cueNode:options.cueNode||node});
+      if(!ok){try{node.disconnect(duck)}catch{};try{duck.disconnect()}catch{};return false}
       musicDuckSource=node;musicDuckGain=duck;return true;
-    }catch{return originalAttach(id,node)}
+    }catch{return originalAttach(id,node,options)}
   };
   audio.detachSource=function(id){
-    if(id==='music'&&musicDuckSource){try{musicDuckSource.disconnect(musicDuckGain)}catch{};try{musicDuckGain.disconnect()}catch{};musicDuckSource=musicDuckGain=null;}
-    return originalDetach(id);
+    const result=originalDetach(id);
+    if(id==='music'&&musicDuckSource){try{musicDuckSource.disconnect(musicDuckGain)}catch{};try{musicDuckGain.disconnect()}catch{};musicDuckSource=musicDuckGain=null}
+    return result;
   };
 }
 
 function rampDuckGain(target,ms){
-  if(!musicDuckGain||!audio?.context)return;
+  if(!musicDuckGain||!audio.context)return;
   const p=musicDuckGain.gain,now=audio.context.currentTime;
   try{
     if(typeof p.cancelAndHoldAtTime==='function')p.cancelAndHoldAtTime(now);
@@ -166,48 +158,44 @@ function rampDuckGain(target,ms){
   }catch{p.value=target}
 }
 function updateSmartVisual(){
+  if(!smartToggle)return;
   smartToggle.classList.toggle('active',smartEnabled);smartToggle.setAttribute('aria-pressed',smartEnabled?'true':'false');smartToggle.querySelector('span').textContent=smartEnabled?'ON':'OFF';
   const card=$('#smartTalkCard');card.classList.toggle('enabled',smartEnabled);card.classList.toggle('ducking',smartDucking);
-  const music=$('.channel-strip[data-channel="music"]');music?.classList.toggle('smart-ducking',smartDucking);
-  if(!smartEnabled){$('#smartTalkState').textContent='MANUAL CONTROL';$('#smartTalkHint').textContent='Enable when you want automatic talk-over assistance.';return;}
-  if(smartDucking){$('#smartTalkState').textContent=`DUCKING −${duckDepth.value} dB`;$('#smartTalkHint').textContent=`Voice detected · MUSIC base fader remains at ${levelEl('music')?.value||0}%`;return;}
-  if(!document.body.classList.contains('live-broadcasting')){$('#smartTalkState').textContent='ARMED · OFF AIR';$('#smartTalkHint').textContent='Smart Talk will engage when the live program is on air.';return;}
-  if(isMuted('mic')){$('#smartTalkState').textContent='PAUSED · MIC MUTED';$('#smartTalkHint').textContent='Manual MIC mute has priority.';return;}
-  if(isMuted('music')){$('#smartTalkState').textContent='PAUSED · MUSIC MUTED';$('#smartTalkHint').textContent='Manual MUSIC mute has priority.';return;}
+  $('.channel-strip[data-channel="music"]')?.classList.toggle('smart-ducking',smartDucking);
+  if(!smartEnabled){$('#smartTalkState').textContent='MANUAL CONTROL';$('#smartTalkHint').textContent='Enable when you want automatic talk-over assistance.';return}
+  if(activeScene){$('#smartTalkState').textContent='PAUSED · SCENE CONTROL';$('#smartTalkHint').textContent=`${SCENES[activeScene].label} owns the mixer state. Change a control manually to return to CUSTOM.`;return}
+  if(smartDucking){$('#smartTalkState').textContent=`DUCKING −${duckDepth.value} dB`;$('#smartTalkHint').textContent=`Voice detected · MUSIC base fader remains at ${levelEl('music')?.value||0}%`;return}
+  if(!audio.isLive){$('#smartTalkState').textContent='ARMED · OFF AIR';$('#smartTalkHint').textContent='Smart Talk will engage when the live program is on air.';return}
+  if(isMuted('mic')){$('#smartTalkState').textContent='PAUSED · MIC MUTED';$('#smartTalkHint').textContent='Manual MIC mute has priority.';return}
+  if(isMuted('music')){$('#smartTalkState').textContent='PAUSED · MUSIC MUTED';$('#smartTalkHint').textContent='Manual MUSIC mute has priority.';return}
+  if(!musicDuckGain){$('#smartTalkState').textContent='ARMED · NO MUSIC SOURCE';$('#smartTalkHint').textContent='Connect a real MUSIC input to enable audible ducking.';return}
   $('#smartTalkState').textContent='LISTENING';$('#smartTalkHint').textContent='Waiting for meaningful microphone activity.';
 }
 function engageSmartDuck(){
-  if(!smartEnabled||smartDucking||sceneApplying||isMuted('mic')||isMuted('music')||!document.body.classList.contains('live-broadcasting'))return;
+  if(!smartEnabled||smartDucking||sceneApplying||activeScene||isMuted('mic')||isMuted('music')||!audio.isLive||!musicDuckGain)return;
   smartDucking=true;rampDuckGain(dbToGain(-Number(duckDepth.value)),120);updateSmartVisual();
 }
 function releaseSmartDuck(ms=Number(recovery.value),force=false){
-  if(!smartDucking&&!force){updateSmartVisual();return;}
+  if(!smartDucking&&!force){updateSmartVisual();return}
   smartDucking=false;rampDuckGain(1,ms);voiceSince=silenceSince=0;updateSmartVisual();
-}
-function micActivity(){
-  const bars=$$('#micMeter i'),lit=bars.filter(i=>i.className==='lit'||i.className==='hot'||i.className==='peak').length;
-  return bars.length?lit/bars.length:0;
 }
 function activityLoop(now){
   if(now-lastActivityCheck>50){
     lastActivityCheck=now;
-    const activity=micActivity();
-    const approxRms=activity*.085;
-    if(!smartDucking&&approxRms<.035)noiseFloor=noiseFloor*.97+approxRms*.03;
-    const attack=Math.max(.022,noiseFloor*2.6),release=Math.max(.012,attack*.55);
-    const eligible=smartEnabled&&!sceneApplying&&!isMuted('mic')&&!isMuted('music')&&document.body.classList.contains('live-broadcasting');
-    if(!eligible){if(smartDucking)releaseSmartDuck(140,true);voiceSince=silenceSince=0;updateSmartVisual();}
-    else if(approxRms>=attack){
-      silenceSince=0;if(!voiceSince)voiceSince=now;if(!smartDucking&&now-voiceSince>=100)engageSmartDuck();
-    }else if(approxRms<=release){
-      voiceSince=0;if(!silenceSince)silenceSince=now;if(smartDucking&&now-silenceSince>=240)releaseSmartDuck();
-    }
+    const rms=Math.max(0,Number(audio.micRms)||0);
+    if(!smartDucking&&rms<.025)noiseFloor=noiseFloor*.985+rms*.015;
+    const attack=Math.max(.012,noiseFloor*2.8),release=Math.max(.006,attack*.55);
+    const eligible=smartEnabled&&!sceneApplying&&!activeScene&&!isMuted('mic')&&!isMuted('music')&&audio.isLive&&!!musicDuckGain;
+    if(!eligible){if(smartDucking)releaseSmartDuck(120,true);voiceSince=silenceSince=0;updateSmartVisual()}
+    else if(rms>=attack){silenceSince=0;if(!voiceSince)voiceSince=now;if(!smartDucking&&now-voiceSince>=90)engageSmartDuck()}
+    else if(rms<=release){voiceSince=0;if(!silenceSince)silenceSince=now;if(smartDucking&&now-silenceSince>=220)releaseSmartDuck()}
   }
   requestAnimationFrame(activityLoop);
 }
 requestAnimationFrame(activityLoop);
 
-smartToggle.addEventListener('click',()=>{smartEnabled=!smartEnabled;if(!smartEnabled)releaseSmartDuck(120,true);else updateSmartVisual()});
+document.addEventListener('paraiso:live-state',updateSmartVisual);
+smartToggle.addEventListener('click',()=>{smartEnabled=!smartEnabled;if(!smartEnabled)releaseSmartDuck(100,true);else updateSmartVisual()});
 duckDepth.addEventListener('input',()=>{$('#smartDuckDepthValue').textContent=`−${duckDepth.value} dB`;if(smartDucking)rampDuckGain(dbToGain(-Number(duckDepth.value)),120);updateSmartVisual()});
 recovery.addEventListener('input',()=>{$('#smartRecoveryValue').textContent=`${(Number(recovery.value)/1000).toFixed(1)} s`});
 
@@ -216,7 +204,7 @@ window.PARAISO_BROADCAST_TOOLS={
   get activeScene(){return activeScene},
   get smartTalkEnabled(){return smartEnabled},
   get smartTalkDucking(){return smartDucking},
-  setSmartTalk(enabled){smartEnabled=!!enabled;if(!smartEnabled)releaseSmartDuck(120,true);updateSmartVisual()},
+  setSmartTalk(enabled){smartEnabled=!!enabled;if(!smartEnabled)releaseSmartDuck(100,true);updateSmartVisual()},
   scenes:Object.keys(SCENES)
 };
 
