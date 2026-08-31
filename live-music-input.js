@@ -90,4 +90,11 @@ navigator.mediaDevices?.addEventListener?.('devicechange',refreshDevices);
 window.addEventListener('beforeunload',cleanupLocal);
 window.PARAISO_MUSIC_INPUT={connect:connectMusic,disconnect:disconnectMusic,refreshDevices,get connected(){return !!musicStream},get deviceLabel(){return selectedDeviceLabel}};
 setTimeout(refreshDevices,350);
+
+if(!window.PARAISO_MASTER_METER&&!document.querySelector('script[data-paraiso-master-meter]')){
+  const meterScript=document.createElement('script');
+  meterScript.src='./live-master-meter.js?v=2';
+  meterScript.dataset.paraisoMasterMeter='true';
+  document.body.appendChild(meterScript);
+}
 })();
