@@ -1,10 +1,10 @@
 (()=>{
-const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const $=s=>document.querySelector(s);
 const audio=window.PARAISO_LIVE_AUDIO;
 const ribbon=$('.setup-ribbon'),micField=$('#micDeviceSelect')?.closest('.ribbon-field');
 if(!audio||!ribbon||!micField||$('#musicDeviceSelect'))return;
 
-let musicStream=null,musicSource=null,musicAnalyser=null,meterRaf=0;
+let musicStream=null,musicSource=null;
 let selectedDeviceLabel='';
 
 const field=document.createElement('label');
@@ -22,16 +22,11 @@ micField.insertAdjacentElement('afterend',field);
 ribbon.classList.add('has-music-input');
 
 const select=$('#musicDeviceSelect'),button=$('#musicInputButton'),status=$('#musicInputStatus');
+function setStatus(text,state='idle'){status.textContent=text;field.dataset.state=state}
+function likelyVirtual(label=''){return /blackhole|radio\s*out|loopback|soundflower|virtual|vb[- ]?cable/i.test(label)}
 
-function setStatus(text,state='idle'){
-  status.textContent=text;
-  field.dataset.state=state;
-}
-function likelyVirtual(label=''){
-  return /blackhole|radio\s*out|loopback|soundflower|virtual|vb[- ]?cable/i.test(label);
-}
 async function refreshDevices(){
-  if(!navigator.mediaDevices?.enumerateDevices){setStatus('Audio input enumeration is not supported in this browser.','error');return;}
+  if(!navigator.mediaDevices?.enumerateDevices){setStatus('Audio input enumeration is not supported in this browser.','error');return}
   const current=select.value;
   try{
     const devices=await navigator.mediaDevices.enumerateDevices();
@@ -45,65 +40,36 @@ async function refreshDevices(){
     }
   }catch{setStatus('Could not read audio input devices. Check browser microphone permission.','error')}
 }
-function paintMusicMeter(level){
-  const bars=$$('#musicMeter i');
-  if(!bars.length)return;
-  const lit=Math.round(Math.max(0,Math.min(1,level))*bars.length);
-  bars.forEach((bar,i)=>bar.className=i<lit?(i>bars.length*.88?'peak':i>bars.length*.72?'hot':'lit'):'');
-}
-function stopMeter(){if(meterRaf)cancelAnimationFrame(meterRaf);meterRaf=0}
-function startMeter(){
-  stopMeter();
-  if(!musicAnalyser)return;
-  const data=new Uint8Array(musicAnalyser.fftSize);
-  const draw=()=>{
-    if(!musicAnalyser)return;
-    musicAnalyser.getByteTimeDomainData(data);
-    let sum=0,peak=0;
-    for(const v of data){const x=(v-128)/128;sum+=x*x;peak=Math.max(peak,Math.abs(x))}
-    const rms=Math.sqrt(sum/data.length),level=Math.min(1,Math.max(rms*4.6,peak*1.35));
-    paintMusicMeter(level);
-    meterRaf=requestAnimationFrame(draw);
-  };
-  meterRaf=requestAnimationFrame(draw);
-}
+
 function cleanupLocal(){
-  stopMeter();
   try{musicSource?.disconnect()}catch{}
-  try{musicAnalyser?.disconnect()}catch{}
   if(musicStream)musicStream.getTracks().forEach(t=>t.stop());
-  musicStream=musicSource=musicAnalyser=null;
-  selectedDeviceLabel='';
+  musicStream=musicSource=null;selectedDeviceLabel='';
 }
 function disconnectMusic({quiet=false}={}){
-  if(musicStream||musicSource){
-    try{audio.detachSource('music')}catch{}
-    cleanupLocal();
-  }
-  button.textContent='CONNECT';button.classList.remove('connected');select.disabled=false;
-  field.classList.remove('connected');
+  if(musicStream||musicSource){try{audio.detachSource('music')}catch{};cleanupLocal()}
+  button.textContent='CONNECT';button.classList.remove('connected');button.disabled=false;select.disabled=false;field.classList.remove('connected');
   if(!quiet)setStatus('Disconnected. Select a virtual audio input to reconnect.','idle');
 }
 async function connectMusic(){
   const deviceId=select.value;
-  if(!deviceId){setStatus('Choose a virtual audio input first.','error');return;}
-  if(!navigator.mediaDevices?.getUserMedia){setStatus('Audio capture is unavailable in this browser.','error');return;}
-  if(!audio.context){setStatus('Audio engine is not ready yet. Open Live Studio and allow microphone access first.','error');return;}
+  if(!deviceId){setStatus('Choose a virtual audio input first.','error');return}
+  if(!navigator.mediaDevices?.getUserMedia){setStatus('Audio capture is unavailable in this browser.','error');return}
+  const ctx=audio.ensureContext?.()||audio.context;
+  if(!ctx){setStatus('Audio engine could not start. Tap Live Studio once and try again.','error');return}
+
   disconnectMusic({quiet:true});
   button.disabled=true;button.textContent='CONNECTING…';select.disabled=true;setStatus('Opening real MUSIC input…','connecting');
   try{
     musicStream=await navigator.mediaDevices.getUserMedia({audio:{deviceId:{exact:deviceId},echoCancellation:false,noiseSuppression:false,autoGainControl:false,channelCount:{ideal:2}},video:false});
     const track=musicStream.getAudioTracks()[0];
     selectedDeviceLabel=track?.label||select.selectedOptions[0]?.textContent||'Virtual audio';
-    const ctx=audio.context;
     musicSource=ctx.createMediaStreamSource(musicStream);
-    musicAnalyser=ctx.createAnalyser();musicAnalyser.fftSize=512;musicAnalyser.smoothingTimeConstant=.62;
-    musicSource.connect(musicAnalyser);
     const attached=audio.attachSource('music',musicSource);
     if(!attached)throw new Error('Mixer rejected MUSIC source');
-    startMeter();
+
     button.textContent='DISCONNECT';button.classList.add('connected');field.classList.add('connected');
-    setStatus(`REAL MUSIC · ${selectedDeviceLabel} · routed through MUSIC fader and Smart Talk.`,'connected');
+    setStatus(`REAL MUSIC · ${selectedDeviceLabel} · MUSIC fader, CUE, MASTER and Smart Talk are active.`,'connected');
     track?.addEventListener('ended',()=>disconnectMusic());
   }catch(e){
     cleanupLocal();select.disabled=false;button.textContent='CONNECT';
@@ -121,15 +87,7 @@ select.addEventListener('change',()=>{
 });
 
 navigator.mediaDevices?.addEventListener?.('devicechange',refreshDevices);
-window.addEventListener('beforeunload',()=>cleanupLocal());
-
-window.PARAISO_MUSIC_INPUT={
-  connect:connectMusic,
-  disconnect:disconnectMusic,
-  refreshDevices,
-  get connected(){return !!musicStream},
-  get deviceLabel(){return selectedDeviceLabel}
-};
-
+window.addEventListener('beforeunload',cleanupLocal);
+window.PARAISO_MUSIC_INPUT={connect:connectMusic,disconnect:disconnectMusic,refreshDevices,get connected(){return !!musicStream},get deviceLabel(){return selectedDeviceLabel}};
 setTimeout(refreshDevices,350);
 })();
