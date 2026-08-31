@@ -26,16 +26,19 @@ function normToRms(norm){
 function channelContribution(id){
   if(audio.getChannelMuted?.(id))return 0;
   const level=clamp(Number(audio.getChannelLevel?.(id)||0)/100);
+  if(level<=0)return 0;
   return normToRms(meterNorm(id))*level;
 }
 function aggregateProgramRms(){
+  if(audio.getChannelMuted?.('master'))return 0;
+  const masterLevel=clamp(Number(audio.getChannelLevel?.('master')||0)/100);
+  if(masterLevel<=0)return 0;
+
   let energy=0;
   for(const id of SOURCES){
     const rms=channelContribution(id);
     energy+=rms*rms;
   }
-  if(audio.getChannelMuted?.('master'))return 0;
-  const masterLevel=clamp(Number(audio.getChannelLevel?.('master')||0)/100);
   return Math.sqrt(energy)*masterLevel;
 }
 function rmsToNorm(rms){
@@ -52,12 +55,11 @@ function paint(norm){
 }
 function render(){
   raf=0;
-  const aggregate=aggregateProgramRms();
-  const analyserRms=Math.max(0,Number(audio.masterRms)||0);
-  // Never let the visual program meter under-report a real channel contribution.
-  // The analyser remains useful for peaks/phase; the aggregate guarantees every
-  // real post-fader source is represented.
-  lastRms=Math.max(aggregate,analyserRms);
+  /* MASTER is a post-fader/post-mute program meter.
+     It is deliberately derived only from channels that are actually on program.
+     This prevents analyser smoothing/residual signal from leaving the green meter
+     lit after MUSIC/MIC/CARTS/REQUESTS or MASTER are muted. */
+  lastRms=aggregateProgramRms();
   paint(rmsToNorm(lastRms));
 }
 function schedule(){if(!raf)raf=requestAnimationFrame(render)}
